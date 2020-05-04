@@ -32,7 +32,7 @@ before_script:
 script:
   - golangci-lint run --enable-all # run a bunch of code checkers/linters in parallel
   - go test -v -race ./...  # Run all the tests with the race detector enabled
-  - ./codecov.sh
+  - ./scripts/codecov.sh
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
