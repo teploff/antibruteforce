@@ -2,12 +2,17 @@
 package logger
 
 import (
-	"github.com/natefinch/lumberjack"
-	"github.com/teploff/antibruteforce/config"
 	"os"
 
+	"github.com/natefinch/lumberjack"
+	"github.com/teploff/antibruteforce/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+)
+
+const (
+	maxBackups = 3
+	maxAge     = 3
 )
 
 type Option func(logger *zap.Logger) *zap.Logger
@@ -22,14 +27,15 @@ func New(dev bool, cfg *config.LoggerConfig, opts ...Option) *zap.Logger {
 	write := zapcore.AddSync(&lumberjack.Logger{
 		Filename:   cfg.Filename,
 		MaxSize:    cfg.MaxSize, // megabytes
-		MaxBackups: 3,           // old logs
-		MaxAge:     3,           // days
+		MaxBackups: maxBackups,  // old logs
+		MaxAge:     maxAge,      // days
 		Compress:   true,
 	})
 
 	if dev {
 		encoder = zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
 		write = os.Stdout
+
 		options = append(options, zap.AddStacktrace(zap.ErrorLevel))
 		options = append(options, zap.Development())
 	}
@@ -50,9 +56,8 @@ func New(dev bool, cfg *config.LoggerConfig, opts ...Option) *zap.Logger {
 
 // Unmarshal text to a zap level notation.
 //
-// level - text logging notation
+// level - text logging notation.
 func getLogLevel(level string) zapcore.Level {
-
 	lvl := zap.DebugLevel
 	_ = lvl.UnmarshalText([]byte(level))
 

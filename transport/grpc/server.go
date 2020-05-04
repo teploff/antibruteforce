@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/transport"
 	kitgrpc "github.com/go-kit/kit/transport/grpc"
@@ -12,6 +13,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const maxReceivedMsgSize = 1024 * 1024 * 20
+
 type server struct {
 	signIn kitgrpc.Handler
 }
@@ -21,11 +24,11 @@ func (s server) SignIn(ctx context.Context, request *pb.SignInRequest) (*pb.Sign
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
+
 	return response.(*pb.SignInResponse), nil
 }
 
 func NewGRPCServer(endpoints auth.Endpoints, errLogger log.Logger) *grpc.Server {
-
 	options := []kitgrpc.ServerOption{
 		kitgrpc.ServerErrorHandler(transport.NewLogErrorHandler(errLogger)),
 	}
@@ -39,7 +42,7 @@ func NewGRPCServer(endpoints auth.Endpoints, errLogger log.Logger) *grpc.Server 
 		), errLogger),
 	}
 
-	baseServer := grpc.NewServer(grpc.UnaryInterceptor(kitgrpc.Interceptor), grpc.MaxRecvMsgSize(1024*1024*20))
+	baseServer := grpc.NewServer(grpc.UnaryInterceptor(kitgrpc.Interceptor), grpc.MaxRecvMsgSize(maxReceivedMsgSize))
 	pb.RegisterAuthServer(baseServer, srv)
 
 	return baseServer
@@ -47,6 +50,7 @@ func NewGRPCServer(endpoints auth.Endpoints, errLogger log.Logger) *grpc.Server 
 
 func decodeSignInRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
 	request := grpcReq.(*pb.SignInRequest)
+
 	return auth.SignInRequest{
 		Login:    request.Login,
 		Password: request.Password,
@@ -56,6 +60,7 @@ func decodeSignInRequest(_ context.Context, grpcReq interface{}) (interface{}, e
 
 func encodeSignInResponse(_ context.Context, grpcResp interface{}) (interface{}, error) {
 	response := grpcResp.(auth.SignInResponse)
+
 	return &pb.SignInResponse{
 		Ok: response.Ok,
 	}, nil
@@ -71,7 +76,7 @@ func newRecoveryGRPCHandler(next kitgrpc.Handler, logger log.Logger) *recoveryGR
 	return &recoveryGRPCHandler{next: next, logger: logger}
 }
 
-func (rh *recoveryGRPCHandler) ServeGRPC(ctx context.Context, request interface{}) (context.Context, interface{}, error) {
+func (rh *recoveryGRPCHandler) ServeGRPC(ctx context.Context, req interface{}) (context.Context, interface{}, error) {
 	defer func() {
 		if r := recover(); r != nil {
 			if err, ok := r.(error); ok {
@@ -80,5 +85,5 @@ func (rh *recoveryGRPCHandler) ServeGRPC(ctx context.Context, request interface{
 		}
 	}()
 
-	return rh.next.ServeGRPC(ctx, request)
+	return rh.next.ServeGRPC(ctx, req)
 }

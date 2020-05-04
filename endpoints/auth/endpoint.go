@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+
 	"github.com/go-kit/kit/endpoint"
 	"github.com/teploff/antibruteforce/domain/entity"
 	"github.com/teploff/antibruteforce/domain/service"
@@ -18,10 +19,14 @@ func makeSignInEndpoint(svc service.AuthService) endpoint.Endpoint {
 			Login:    req.Login,
 			Password: req.Password,
 		}, req.IP)
+
 		if err != nil {
 			return SignInResponse{}, err
 		}
-		return SignInResponse{Ok: ok}, nil
+
+		return SignInResponse{
+			Ok: ok,
+		}, nil
 	}
 }
 

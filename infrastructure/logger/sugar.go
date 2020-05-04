@@ -6,6 +6,8 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+const cellerSkip = 2
+
 type zapSugarLogger func(msg string, keysAndValues ...interface{})
 
 // Log if first key = msg than first value will be interpreted as zap logger message
@@ -16,14 +18,17 @@ func (l zapSugarLogger) Log(kv ...interface{}) error {
 	} else {
 		l("", kv...)
 	}
+
 	return nil
 }
 
 // NewZapSugarLogger returns a Go kit log.Logger that sends
 // log events to a zap.Logger.
 func NewZapSugarLogger(logger *zap.Logger, level zapcore.Level) log.Logger {
-	sugarLogger := logger.WithOptions(zap.AddCallerSkip(2)).Sugar()
 	var sugar zapSugarLogger
+
+	sugarLogger := logger.WithOptions(zap.AddCallerSkip(cellerSkip)).Sugar()
+
 	switch level {
 	case zapcore.DebugLevel:
 		sugar = sugarLogger.Debugw
@@ -42,5 +47,6 @@ func NewZapSugarLogger(logger *zap.Logger, level zapcore.Level) log.Logger {
 	default:
 		sugar = sugarLogger.Infow
 	}
+
 	return sugar
 }

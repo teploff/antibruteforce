@@ -28,9 +28,7 @@ go.uber.org/zap/internal/bufferpool
 go.uber.org/zap/internal/color
 go.uber.org/zap/internal/exit
 go.uber.org/zap/zapcore
-# golang.org/x/lint v0.0.0-20200302205851-738671d3881b
-## explicit
-# golang.org/x/net v0.0.0-20200226121028-0de0cce0169b
+# golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
 golang.org/x/net/http2/hpack
@@ -44,8 +42,6 @@ golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
-# golang.org/x/tools v0.0.0-20200504152539-33427f1b0364
-## explicit
 # google.golang.org/genproto v0.0.0-20200430143042-b979b6f78d84
 ## explicit
 google.golang.org/genproto/googleapis/rpc/status

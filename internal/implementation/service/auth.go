@@ -2,12 +2,14 @@ package service
 
 import (
 	"fmt"
+
 	"github.com/teploff/antibruteforce/domain/entity"
+	"github.com/teploff/antibruteforce/domain/service"
 )
 
 type authService struct{}
 
-func NewAuthService() *authService {
+func NewAuthService() service.AuthService {
 	return &authService{}
 }
 
