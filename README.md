@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/teploff/antibruteforce.svg?branch=master)](https://travis-ci.org/teploff/antibruteforce)
+[![Build Status](https://travis-ci.com/teploff/antibruteforce.svg?branch=master)](https://travis-ci.com/github/teploff/antibruteforce)
 
 ```
 git clone https://github.com/teploff/otus.git
