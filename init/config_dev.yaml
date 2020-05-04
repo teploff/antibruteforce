@@ -1,0 +1,7 @@
+server:
+  addr: "0.0.0.0:8087"
+
+logger:
+  file_name: "./auth.log"
+  max_size: 50
+  level: "info"
