@@ -6,3 +6,6 @@ run:
 
 test:
 	go test ./... -v -race -coverprofile=coverage.txt -covermode=atomic -coverpkg=./...
+
+lint:
+	golangci-lint run --enable-all
