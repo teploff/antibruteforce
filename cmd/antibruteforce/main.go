@@ -13,6 +13,7 @@ import (
 	"github.com/teploff/antibruteforce/config"
 	"github.com/teploff/antibruteforce/endpoints/auth"
 	"github.com/teploff/antibruteforce/infrastructure/logger"
+	"github.com/teploff/antibruteforce/internal/implementation/gateway"
 	"github.com/teploff/antibruteforce/internal/implementation/service"
 	kitgrpc "github.com/teploff/antibruteforce/transport/grpc"
 	"go.uber.org/zap"
@@ -44,7 +45,8 @@ func main() {
 		zapLogger.Fatal("gRPC listener", zap.Error(err))
 	}
 
-	srv := service.NewAuthService()
+	srv := service.NewAuthService(gateway.NewRateLimiter(cfg.Limiter.Login),
+		gateway.NewRateLimiter(cfg.Limiter.Password), gateway.NewRateLimiter(cfg.Limiter.IP))
 
 	grpcServer := kitgrpc.NewGRPCServer(auth.MakeAuthEndpoints(srv),
 		logger.NewZapSugarLogger(zapLogger, zapcore.ErrorLevel))

@@ -5,3 +5,8 @@ logger:
   file_name: "./auth.log"
   max_size: 50
   level: "info"
+
+limiter:
+  login: 1
+  password: 1
+  ip: 1
