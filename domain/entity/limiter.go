@@ -65,6 +65,10 @@ type Limiter struct {
 	lastEvent time.Time
 }
 
+func (lim *Limiter) Last() time.Time {
+	return lim.last
+}
+
 // Limit returns the maximum overall event rate.
 func (lim *Limiter) Limit() Limit {
 	lim.mu.Lock()

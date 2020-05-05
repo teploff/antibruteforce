@@ -7,9 +7,9 @@ import (
 )
 
 type Config struct {
-	Server  GrpcServer   `yaml:"server"`
-	Logger  LoggerConfig `yaml:"logger"`
-	Limiter RateLimiter  `yaml:"limiter"`
+	Server      GrpcServer        `yaml:"server"`
+	Logger      LoggerConfig      `yaml:"logger"`
+	RateLimiter RateLimiterConfig `yaml:"rate_limiter"`
 }
 
 // GrpcServer configuration of grpc-instance service.
@@ -28,10 +28,26 @@ type LoggerConfig struct {
 	Level    string `yaml:"level"`
 }
 
-type RateLimiter struct {
-	Login    int `yaml:"login"`
-	Password int `yaml:"password"`
-	IP       int `yaml:"ip"`
+type RateLimiterConfig struct {
+	Login    Login    `yaml:"login"`
+	Password Password `yaml:"password"`
+	IP       IP       `yaml:"ip"`
+	GCTime   int      `yaml:"gc_time"`
+}
+
+type Login struct {
+	RPM        int `yaml:"rpm"`
+	ExpireTime int `yaml:"expire_time"`
+}
+
+type Password struct {
+	RPM        int `yaml:"rpm"`
+	ExpireTime int `yaml:"expire_time"`
+}
+
+type IP struct {
+	RPM        int `yaml:"rpm"`
+	ExpireTime int `yaml:"expire_time"`
 }
 
 // LoadFromFile create configuration from file.
