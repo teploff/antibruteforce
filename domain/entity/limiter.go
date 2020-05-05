@@ -63,10 +63,12 @@ type Limiter struct {
 	last time.Time
 	// lastEvent is the latest time of a rate-limited event (past or future)
 	lastEvent time.Time
+
+	lastSeen time.Time
 }
 
-func (lim *Limiter) Last() time.Time {
-	return lim.last
+func (lim *Limiter) LastSeen() time.Time {
+	return lim.lastSeen
 }
 
 // Limit returns the maximum overall event rate.
@@ -89,13 +91,15 @@ func (lim *Limiter) Burst() int {
 // bursts of at most b tokens.
 func NewLimiter(r Limit, b int) *Limiter {
 	return &Limiter{
-		limit: r,
-		burst: b,
+		limit:    r,
+		burst:    b,
+		lastSeen: time.Now(),
 	}
 }
 
 // Allow is shorthand for AllowN(time.Now(), 1).
 func (lim *Limiter) Allow() bool {
+	lim.lastSeen = time.Now()
 	return lim.AllowN(time.Now(), 1)
 }
 

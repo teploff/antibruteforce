@@ -16,12 +16,12 @@ type leakyBucket struct {
 	expireTime time.Duration
 }
 
-func NewLeakyBucket(rate, expireTime int) repository.BucketStorable {
+func NewLeakyBucket(rate int, expireTime time.Duration) repository.BucketStorable {
 	return &leakyBucket{
 		buckets:    make(map[string]*entity.Limiter),
 		rate:       entity.Limit(rate),
 		mu:         &sync.RWMutex{},
-		expireTime: time.Duration(expireTime) * time.Second,
+		expireTime: expireTime,
 	}
 }
 
@@ -68,7 +68,7 @@ func (l *leakyBucket) Clean() {
 	defer l.mu.Unlock()
 
 	for k, v := range l.buckets {
-		if time.Since(v.Last()) > l.expireTime {
+		if time.Since(v.LastSeen()) > l.expireTime {
 			delete(l.buckets, k)
 		}
 	}
