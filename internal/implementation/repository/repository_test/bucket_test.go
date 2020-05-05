@@ -161,8 +161,6 @@ func TestOneBucketsShouldClean(t *testing.T) {
 func TestAllBucketsShouldClean(t *testing.T) {
 	rate := 1
 	expireTime := time.Millisecond * 50
-	bucketKey1 := "bucket_key_1"
-	bucketKey2 := "bucket_key_2"
 	basket := repository.NewLeakyBucket(rate, expireTime)
 	ticker := time.NewTicker(time.Millisecond * 100)
 
