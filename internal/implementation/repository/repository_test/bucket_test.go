@@ -16,8 +16,9 @@ const (
 
 func TestGetAbsentBucketFromEmptyBasket(t *testing.T) {
 	rate := 1
+	duration := time.Second
 	expireTime := time.Second
-	basket := repository.NewLeakyBucket(rate, expireTime)
+	basket := repository.NewLeakyBucket(rate, duration, expireTime)
 
 	limiter, err := basket.Get(absentKey)
 	assert.Error(t, err)
@@ -26,8 +27,9 @@ func TestGetAbsentBucketFromEmptyBasket(t *testing.T) {
 
 func TestGetAbsentBucketFromNotEmptyBasket(t *testing.T) {
 	rate := 1
+	duration := time.Second
 	expireTime := time.Second
-	basket := repository.NewLeakyBucket(rate, expireTime)
+	basket := repository.NewLeakyBucket(rate, duration, expireTime)
 
 	limiter, err := basket.Add(bucketKey1)
 	assert.NoError(t, err)
@@ -40,8 +42,9 @@ func TestGetAbsentBucketFromNotEmptyBasket(t *testing.T) {
 
 func TestGetExistBucket(t *testing.T) {
 	rate := 1
+	duration := time.Second
 	expireTime := time.Second
-	basket := repository.NewLeakyBucket(rate, expireTime)
+	basket := repository.NewLeakyBucket(rate, duration, expireTime)
 
 	limiter, err := basket.Add(bucketKey1)
 	assert.NoError(t, err)
@@ -54,8 +57,9 @@ func TestGetExistBucket(t *testing.T) {
 
 func TestAddExistBucket(t *testing.T) {
 	rate := 1
+	duration := time.Second
 	expireTime := time.Second
-	basket := repository.NewLeakyBucket(rate, expireTime)
+	basket := repository.NewLeakyBucket(rate, duration, expireTime)
 
 	limiter, err := basket.Add(bucketKey1)
 	assert.NoError(t, err)
@@ -68,8 +72,9 @@ func TestAddExistBucket(t *testing.T) {
 
 func TestDeleteAbsentBucketFromEmptyBasket(t *testing.T) {
 	rate := 1
+	duration := time.Second
 	expireTime := time.Second
-	basket := repository.NewLeakyBucket(rate, expireTime)
+	basket := repository.NewLeakyBucket(rate, duration, expireTime)
 
 	err := basket.Delete(absentKey)
 	assert.Error(t, err)
@@ -77,8 +82,9 @@ func TestDeleteAbsentBucketFromEmptyBasket(t *testing.T) {
 
 func TestDeleteAbsentBucketFromNotEmptyBasket(t *testing.T) {
 	rate := 1
+	duration := time.Second
 	expireTime := time.Second
-	basket := repository.NewLeakyBucket(rate, expireTime)
+	basket := repository.NewLeakyBucket(rate, duration, expireTime)
 
 	limiter, err := basket.Add(bucketKey1)
 	assert.NoError(t, err)
@@ -90,8 +96,9 @@ func TestDeleteAbsentBucketFromNotEmptyBasket(t *testing.T) {
 
 func TestDeleteExistBucket(t *testing.T) {
 	rate := 1
+	duration := time.Second
 	expireTime := time.Second
-	basket := repository.NewLeakyBucket(rate, expireTime)
+	basket := repository.NewLeakyBucket(rate, duration, expireTime)
 
 	limiter, err := basket.Add(bucketKey1)
 	assert.NoError(t, err)
@@ -107,8 +114,9 @@ func TestDeleteExistBucket(t *testing.T) {
 
 func TestNoOneBucketsShouldClean(t *testing.T) {
 	rate := 1
+	duration := time.Second
 	expireTime := time.Millisecond * 100
-	basket := repository.NewLeakyBucket(rate, expireTime)
+	basket := repository.NewLeakyBucket(rate, duration, expireTime)
 	ticker := time.NewTicker(time.Millisecond * 10)
 
 	limiter, err := basket.Add(bucketKey1)
@@ -133,8 +141,9 @@ func TestNoOneBucketsShouldClean(t *testing.T) {
 
 func TestOneBucketsShouldClean(t *testing.T) {
 	rate := 1
+	duration := time.Second
 	expireTime := time.Millisecond * 50
-	basket := repository.NewLeakyBucket(rate, expireTime)
+	basket := repository.NewLeakyBucket(rate, duration, expireTime)
 	ticker := time.NewTicker(time.Millisecond * 100)
 
 	limiter, err := basket.Add(bucketKey1)
@@ -160,8 +169,9 @@ func TestOneBucketsShouldClean(t *testing.T) {
 
 func TestAllBucketsShouldClean(t *testing.T) {
 	rate := 1
+	duration := time.Second
 	expireTime := time.Millisecond * 50
-	basket := repository.NewLeakyBucket(rate, expireTime)
+	basket := repository.NewLeakyBucket(rate, duration, expireTime)
 	ticker := time.NewTicker(time.Millisecond * 100)
 
 	limiter, err := basket.Add(bucketKey1)

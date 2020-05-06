@@ -11,15 +11,17 @@ import (
 
 type leakyBucket struct {
 	buckets    map[string]*entity.Limiter
-	rate       entity.Limit
+	rate       int
+	interval   time.Duration
 	mu         *sync.RWMutex
 	expireTime time.Duration
 }
 
-func NewLeakyBucket(rate int, expireTime time.Duration) repository.BucketStorable {
+func NewLeakyBucket(rate int, interval, expireTime time.Duration) repository.BucketStorable {
 	return &leakyBucket{
 		buckets:    make(map[string]*entity.Limiter),
-		rate:       entity.Limit(rate),
+		rate:       rate,
+		interval:   interval,
 		mu:         &sync.RWMutex{},
 		expireTime: expireTime,
 	}

@@ -24,11 +24,14 @@ type RateLimiter struct {
 
 func NewRateLimiter(ctx context.Context, cfg config.RateLimiterConfig) *RateLimiter {
 	return &RateLimiter{
-		loginBuckets:    bucket.NewLeakyBucket(cfg.Login.RPM, time.Duration(cfg.Login.ExpireTime)*time.Second),
-		passwordBuckets: bucket.NewLeakyBucket(cfg.Password.RPM, time.Duration(cfg.Password.ExpireTime)*time.Second),
-		ipBuckets:       bucket.NewLeakyBucket(cfg.IP.RPM, time.Duration(cfg.IP.ExpireTime)*time.Second),
-		ctx:             ctx,
-		duration:        time.Duration(cfg.GCTime) * time.Second,
+		loginBuckets: bucket.NewLeakyBucket(cfg.Login.RPM, time.Minute,
+			time.Duration(cfg.Login.ExpireTime)*time.Second),
+		passwordBuckets: bucket.NewLeakyBucket(cfg.Password.RPM, time.Minute,
+			time.Duration(cfg.Password.ExpireTime)*time.Second),
+		ipBuckets: bucket.NewLeakyBucket(cfg.IP.RPM, time.Minute,
+			time.Duration(cfg.IP.ExpireTime)*time.Second),
+		ctx:      ctx,
+		duration: time.Duration(cfg.GCTime) * time.Second,
 	}
 }
 
