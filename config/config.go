@@ -2,6 +2,7 @@ package config
 
 import (
 	"io/ioutil"
+	"time"
 
 	"gopkg.in/yaml.v2"
 )
@@ -29,25 +30,28 @@ type LoggerConfig struct {
 }
 
 type RateLimiterConfig struct {
-	Login    Login    `yaml:"login"`
-	Password Password `yaml:"password"`
-	IP       IP       `yaml:"ip"`
-	GCTime   int      `yaml:"gc_time"`
+	Login    Login         `yaml:"login"`
+	Password Password      `yaml:"password"`
+	IP       IP            `yaml:"ip"`
+	GCTime   time.Duration `yaml:"gc_time"`
 }
 
 type Login struct {
-	RPM        int `yaml:"rpm"`
-	ExpireTime int `yaml:"expire_time"`
+	Rate       int           `yaml:"rate"`
+	Interval   time.Duration `yaml:"interval"`
+	ExpireTime time.Duration `yaml:"expire_time"`
 }
 
 type Password struct {
-	RPM        int `yaml:"rpm"`
-	ExpireTime int `yaml:"expire_time"`
+	Rate       int           `yaml:"rate"`
+	Interval   time.Duration `yaml:"interval"`
+	ExpireTime time.Duration `yaml:"expire_time"`
 }
 
 type IP struct {
-	RPM        int `yaml:"rpm"`
-	ExpireTime int `yaml:"expire_time"`
+	Rate       int           `yaml:"rate"`
+	Interval   time.Duration `yaml:"interval"`
+	ExpireTime time.Duration `yaml:"expire_time"`
 }
 
 // LoadFromFile create configuration from file.

@@ -3,7 +3,6 @@ package limiter
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/teploff/antibruteforce/config"
@@ -24,14 +23,11 @@ type RateLimiter struct {
 
 func NewRateLimiter(ctx context.Context, cfg config.RateLimiterConfig) *RateLimiter {
 	return &RateLimiter{
-		loginBuckets: bucket.NewLeakyBucket(cfg.Login.RPM, time.Minute,
-			time.Duration(cfg.Login.ExpireTime)*time.Second),
-		passwordBuckets: bucket.NewLeakyBucket(cfg.Password.RPM, time.Minute,
-			time.Duration(cfg.Password.ExpireTime)*time.Second),
-		ipBuckets: bucket.NewLeakyBucket(cfg.IP.RPM, time.Minute,
-			time.Duration(cfg.IP.ExpireTime)*time.Second),
-		ctx:      ctx,
-		duration: time.Duration(cfg.GCTime) * time.Second,
+		loginBuckets:    bucket.NewLeakyBucket(cfg.Login.Rate, cfg.Login.Interval, cfg.Login.ExpireTime),
+		passwordBuckets: bucket.NewLeakyBucket(cfg.Password.Rate, cfg.Password.Interval, cfg.Password.ExpireTime),
+		ipBuckets:       bucket.NewLeakyBucket(cfg.IP.Rate, cfg.IP.Interval, cfg.IP.ExpireTime),
+		ctx:             ctx,
+		duration:        cfg.GCTime,
 	}
 }
 
@@ -76,7 +72,6 @@ func (r RateLimiter) RunGarbageCollector() {
 	for {
 		select {
 		case <-r.ctx.Done():
-			fmt.Println("Close the chenal")
 			ticker.Stop()
 
 			return

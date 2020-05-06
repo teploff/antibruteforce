@@ -35,7 +35,7 @@ func (l *leakyBucket) Add(key string) (*entity.Limiter, error) {
 		return nil, shared.ErrAlreadyExist
 	}
 
-	l.buckets[key] = entity.NewLimiter(l.rate, 3)
+	l.buckets[key] = entity.NewLimiter(l.rate, l.interval)
 
 	return l.buckets[key], nil
 }

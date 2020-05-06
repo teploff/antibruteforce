@@ -8,12 +8,15 @@ logger:
 
 rate_limiter:
   login:
-    rpm: 1
-    expire_time: 60
+    rate: 10
+    interval: 1m
+    expire_time: 60s
   password:
-    rpm: 1
-    expire_time: 60
+    rate: 100
+    interval: 1m
+    expire_time: 60s
   ip:
-    rpm: 1
-    expire_time: 60
-  gc_time: 90
+    rate: 1000
+    interval: 1m
+    expire_time: 60s
+  gc_time: 90s
