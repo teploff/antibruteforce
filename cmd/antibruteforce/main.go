@@ -5,17 +5,21 @@ import (
 	"errors"
 	"flag"
 	"net"
+	nethttp "net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	"github.com/teploff/antibruteforce/config"
+	"github.com/teploff/antibruteforce/endpoints/admin"
 	"github.com/teploff/antibruteforce/endpoints/auth"
 	"github.com/teploff/antibruteforce/infrastructure/logger"
+	"github.com/teploff/antibruteforce/internal/implementation/repository"
 	"github.com/teploff/antibruteforce/internal/implementation/service"
 	"github.com/teploff/antibruteforce/internal/limiter"
 	kitgrpc "github.com/teploff/antibruteforce/transport/grpc"
+	"github.com/teploff/antibruteforce/transport/http"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
@@ -28,6 +32,7 @@ var (
 	dev = flag.Bool("dev", false, "dev mode")
 )
 
+//nolint:funlen
 func main() {
 	flag.Parse()
 
@@ -38,30 +43,56 @@ func main() {
 
 	zapLogger := logger.New(*dev, &cfg.Logger)
 
-	grpcListener, err := net.Listen("tcp", cfg.Server.Addr)
+	grpcListener, err := net.Listen("tcp", cfg.GrpcServer.Addr)
 	if err != nil {
 		zapLogger.Fatal("gRPC listener", zap.Error(err))
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-	rateLimiter := limiter.NewRateLimiter(ctx, cfg.RateLimiter)
+	loginBuckets := repository.NewLeakyBucket(cfg.RateLimiter.Login.Rate, cfg.RateLimiter.Login.Interval,
+		cfg.RateLimiter.Login.ExpireTime)
+	passwordBuckets := repository.NewLeakyBucket(cfg.RateLimiter.Password.Rate, cfg.RateLimiter.Password.Interval,
+		cfg.RateLimiter.Password.ExpireTime)
+	ipBuckets := repository.NewLeakyBucket(cfg.RateLimiter.IP.Rate, cfg.RateLimiter.IP.Interval,
+		cfg.RateLimiter.IP.ExpireTime)
+	rateLimiter := limiter.NewRateLimiter(ctx, loginBuckets, passwordBuckets, ipBuckets, cfg.RateLimiter.GCTime)
+	ipList := repository.NewIPList()
 
 	go rateLimiter.RunGarbageCollector()
 
-	srv := service.NewAuthService(rateLimiter)
+	authSvc := service.NewAuthService(rateLimiter, ipList)
+	adminSvc := service.NewAdminSerice(ipList, loginBuckets, passwordBuckets, ipBuckets)
 
-	grpcServer := kitgrpc.NewGRPCServer(auth.MakeAuthEndpoints(srv),
+	gRPCServer := kitgrpc.NewGRPCServer(auth.MakeAuthEndpoints(authSvc),
 		logger.NewZapSugarLogger(zapLogger, zapcore.ErrorLevel))
 
+	router := http.NewHTTPServer(admin.MakeAdminEndpoints(adminSvc), zapLogger)
+	srv := &nethttp.Server{
+		Addr:    cfg.HTTPServer.Addr,
+		Handler: router,
+	}
+
 	go func() {
-		if err = grpcServer.Serve(grpcListener); errors.Is(err, grpc.ErrServerStopped) && err != nil {
+		if err = gRPCServer.Serve(grpcListener); !errors.Is(err, grpc.ErrServerStopped) && err != nil {
 			zapLogger.Fatal("gRPC serve error", zap.Error(err))
+		}
+	}()
+
+	go func() {
+		if err = srv.ListenAndServe(); !errors.Is(err, nethttp.ErrServerClosed) && err != nil {
+			zapLogger.Fatal("http serve error", zap.Error(err))
 		}
 	}()
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	<-done
+
+	gRPCServer.GracefulStop()
+
+	if err = srv.Shutdown(ctx); err != nil {
+		zapLogger.Fatal("http shutdown error", zap.Error(err))
+	}
 
 	defer func() {
 		// extra handling here

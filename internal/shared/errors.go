@@ -3,6 +3,6 @@ package shared
 import "errors"
 
 var (
-	ErrNotFound     = errors.New("bucket doesn't exist")
-	ErrAlreadyExist = errors.New("bucket already exists")
+	ErrNotFound     = errors.New("not found")
+	ErrAlreadyExist = errors.New("already exists")
 )

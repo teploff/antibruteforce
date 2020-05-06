@@ -5,9 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/teploff/antibruteforce/config"
 	"github.com/teploff/antibruteforce/domain/repository"
-	bucket "github.com/teploff/antibruteforce/internal/implementation/repository"
 	"github.com/teploff/antibruteforce/internal/shared"
 )
 
@@ -21,13 +19,13 @@ type RateLimiter struct {
 	duration        time.Duration
 }
 
-func NewRateLimiter(ctx context.Context, cfg config.RateLimiterConfig) *RateLimiter {
+func NewRateLimiter(ctx context.Context, login, password, ip repository.BucketStorable, d time.Duration) *RateLimiter {
 	return &RateLimiter{
-		loginBuckets:    bucket.NewLeakyBucket(cfg.Login.Rate, cfg.Login.Interval, cfg.Login.ExpireTime),
-		passwordBuckets: bucket.NewLeakyBucket(cfg.Password.Rate, cfg.Password.Interval, cfg.Password.ExpireTime),
-		ipBuckets:       bucket.NewLeakyBucket(cfg.IP.Rate, cfg.IP.Interval, cfg.IP.ExpireTime),
+		loginBuckets:    login,
+		passwordBuckets: password,
+		ipBuckets:       ip,
 		ctx:             ctx,
-		duration:        cfg.GCTime,
+		duration:        d,
 	}
 }
 
@@ -73,7 +71,6 @@ func (r RateLimiter) RunGarbageCollector() {
 		select {
 		case <-r.ctx.Done():
 			ticker.Stop()
-
 			return
 		case <-ticker.C:
 			r.loginBuckets.Clean()
