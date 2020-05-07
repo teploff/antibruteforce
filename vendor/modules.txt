@@ -1,3 +1,5 @@
+# github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d
+github.com/cpuguy83/go-md2man/v2/md2man
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/go-kit/kit v0.10.0
@@ -24,9 +26,16 @@ github.com/gorilla/mux
 github.com/natefinch/lumberjack
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
+# github.com/russross/blackfriday/v2 v2.0.1
+github.com/russross/blackfriday/v2
+# github.com/shurcooL/sanitized_anchor_name v1.0.0
+github.com/shurcooL/sanitized_anchor_name
 # github.com/stretchr/testify v1.5.1
 ## explicit
 github.com/stretchr/testify/assert
+# github.com/urfave/cli/v2 v2.2.0
+## explicit
+github.com/urfave/cli/v2
 # go.uber.org/atomic v1.6.0
 go.uber.org/atomic
 # go.uber.org/multierr v1.5.0

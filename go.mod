@@ -8,6 +8,7 @@ require (
 	github.com/gorilla/mux v1.7.4
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/stretchr/testify v1.5.1
+	github.com/urfave/cli/v2 v2.2.0
 	go.uber.org/zap v1.15.0
 	google.golang.org/genproto v0.0.0-20200430143042-b979b6f78d84 // indirect
 	google.golang.org/grpc v1.29.1
