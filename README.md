@@ -39,9 +39,11 @@ make build_cli
 ./cli -help
 ```
 
-<p align="center">
-  <img src="static/img/cli_help.png">
-</p>
+<kbd>
+    <p align="center">
+      <img src="static/img/cli_help.png">
+    </p>
+</kbd>
 
 Варианты использования
 
