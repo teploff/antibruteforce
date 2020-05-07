@@ -13,6 +13,7 @@ func decodeResponse(response *http.Response) error {
 			return err
 		}
 
+		//nolint:goerr113
 		return errors.New(string(body))
 	}
 

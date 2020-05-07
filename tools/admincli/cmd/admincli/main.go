@@ -9,6 +9,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+//nolint:funlen
 func main() {
 	app := &cli.App{
 		Flags: []cli.Flag{

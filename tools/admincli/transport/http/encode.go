@@ -2,12 +2,14 @@ package http
 
 import (
 	"encoding/json"
+
 	"github.com/teploff/antibruteforce/endpoints/admin"
 )
 
 func encodeResetBucketByLoginRequest(login string) ([]byte, error) {
 	r := admin.ResetBucketByLoginRequest{Login: login}
 	marshalReq, err := json.Marshal(r)
+
 	if err != nil {
 		return nil, err
 	}
@@ -18,6 +20,7 @@ func encodeResetBucketByLoginRequest(login string) ([]byte, error) {
 func encodeResetBucketByPasswordRequest(password string) ([]byte, error) {
 	r := admin.ResetBucketByPasswordRequest{Password: password}
 	marshalReq, err := json.Marshal(r)
+
 	if err != nil {
 		return nil, err
 	}
@@ -28,6 +31,7 @@ func encodeResetBucketByPasswordRequest(password string) ([]byte, error) {
 func encodeResetBucketByIPRequest(ip string) ([]byte, error) {
 	r := admin.ResetBucketByIPRequest{IP: ip}
 	marshalReq, err := json.Marshal(r)
+
 	if err != nil {
 		return nil, err
 	}
@@ -38,6 +42,7 @@ func encodeResetBucketByIPRequest(ip string) ([]byte, error) {
 func encodeSubnetRequest(subnet string) ([]byte, error) {
 	r := admin.SubnetRequest{IPWithMask: subnet}
 	marshalReq, err := json.Marshal(r)
+
 	if err != nil {
 		return nil, err
 	}

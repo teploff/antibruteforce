@@ -20,8 +20,10 @@ func (c Client) ResetBucketByLogin(login string) error {
 		return err
 	}
 
-	destAddr := fmt.Sprintf("http://%s/admin/reset_bucket_by_login", c.Addr)
-	response, err := http.Post(destAddr, "application/json", bytes.NewBuffer(request))
+	url := fmt.Sprintf("http://%s/admin/reset_bucket_by_login", c.Addr)
+	//nolint:gosec
+	response, err := http.Post(url, "application/json", bytes.NewBuffer(request))
+
 	if err != nil {
 		return err
 	}
@@ -37,8 +39,10 @@ func (c Client) ResetBucketByPassword(password string) error {
 		return err
 	}
 
-	destAddr := fmt.Sprintf("http://%s/admin/reset_bucket_by_password", c.Addr)
-	response, err := http.Post(destAddr, "application/json", bytes.NewBuffer(request))
+	url := fmt.Sprintf("http://%s/admin/reset_bucket_by_password", c.Addr)
+	//nolint:gosec
+	response, err := http.Post(url, "application/json", bytes.NewBuffer(request))
+
 	if err != nil {
 		return err
 	}
@@ -54,8 +58,10 @@ func (c Client) ResetBucketByIP(ip string) error {
 		return err
 	}
 
-	destAddr := fmt.Sprintf("http://%s/admin/reset_bucket_by_ip", c.Addr)
-	response, err := http.Post(destAddr, "application/json", bytes.NewBuffer(request))
+	url := fmt.Sprintf("http://%s/admin/reset_bucket_by_ip", c.Addr)
+	//nolint:gosec
+	response, err := http.Post(url, "application/json", bytes.NewBuffer(request))
+
 	if err != nil {
 		return err
 	}
@@ -72,7 +78,9 @@ func (c Client) AddInBlacklist(subnet string) error {
 	}
 
 	destAddr := fmt.Sprintf("http://%s/admin/add_in_blacklist", c.Addr)
+	//nolint:gosec
 	response, err := http.Post(destAddr, "application/json", bytes.NewBuffer(request))
+
 	if err != nil {
 		return err
 	}
@@ -89,7 +97,9 @@ func (c Client) RemoveFromBlacklist(subnet string) error {
 	}
 
 	destAddr := fmt.Sprintf("http://%s/admin/remove_from_blacklist", c.Addr)
+	//nolint:gosec
 	response, err := http.Post(destAddr, "application/json", bytes.NewBuffer(request))
+
 	if err != nil {
 		return err
 	}
@@ -106,7 +116,9 @@ func (c Client) AddInWhitelist(subnet string) error {
 	}
 
 	destAddr := fmt.Sprintf("http://%s/admin/add_in_whitelist", c.Addr)
+	//nolint:gosec
 	response, err := http.Post(destAddr, "application/json", bytes.NewBuffer(request))
+
 	if err != nil {
 		return err
 	}
@@ -123,7 +135,9 @@ func (c Client) RemoveFromWhitelist(subnet string) error {
 	}
 
 	destAddr := fmt.Sprintf("http://%s/admin/remove_from_whitelist", c.Addr)
+	//nolint:gosec
 	response, err := http.Post(destAddr, "application/json", bytes.NewBuffer(request))
+
 	if err != nil {
 		return err
 	}
