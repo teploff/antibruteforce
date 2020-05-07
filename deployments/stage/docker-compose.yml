@@ -1,0 +1,21 @@
+version: '3.7'
+
+# sudo docker-compose up -d --build
+
+services:
+  antibruteforce:
+    build:
+      context: ../../
+      dockerfile: deployments/stage/antibruteforce/Dockerfile
+    image: antibruteforce:latest
+    container_name: antibruteforce
+    ports:
+      - "8087:8087"
+      - "8088:8088"
+    restart: always
+    networks:
+      - stagenetwork
+
+networks:
+  stagenetwork:
+    driver: bridge

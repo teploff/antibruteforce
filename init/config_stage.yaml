@@ -1,0 +1,25 @@
+grpc_server:
+  addr: "0.0.0.0:8087"
+
+http_server:
+  addr: "0.0.0.0:8088"
+
+logger:
+  file_name: "./auth.log"
+  max_size: 50
+  level: "info"
+
+rate_limiter:
+  login:
+    rate: 10
+    interval: 1m
+    expire_time: 60s
+  password:
+    rate: 100
+    interval: 1m
+    expire_time: 60s
+  ip:
+    rate: 1000
+    interval: 1m
+    expire_time: 60s
+  gc_time: 90s
