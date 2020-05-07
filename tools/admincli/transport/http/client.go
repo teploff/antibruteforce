@@ -1,4 +1,4 @@
-package main
+package http
 
 import (
 	"bytes"
@@ -6,15 +6,15 @@ import (
 	"net/http"
 )
 
-type HTTPClient struct {
+type Client struct {
 	Addr string
 }
 
-func NewHTTPClient(addr string) HTTPClient {
-	return HTTPClient{Addr: addr}
+func NewClient(addr string) Client {
+	return Client{Addr: addr}
 }
 
-func (c HTTPClient) ResetBucketByLogin(login string) error {
+func (c Client) ResetBucketByLogin(login string) error {
 	request, err := encodeResetBucketByLoginRequest(login)
 	if err != nil {
 		return err
@@ -31,7 +31,7 @@ func (c HTTPClient) ResetBucketByLogin(login string) error {
 	return decodeResponse(response)
 }
 
-func (c HTTPClient) ResetBucketByPassword(password string) error {
+func (c Client) ResetBucketByPassword(password string) error {
 	request, err := encodeResetBucketByPasswordRequest(password)
 	if err != nil {
 		return err
@@ -48,7 +48,7 @@ func (c HTTPClient) ResetBucketByPassword(password string) error {
 	return decodeResponse(response)
 }
 
-func (c HTTPClient) ResetBucketByIP(ip string) error {
+func (c Client) ResetBucketByIP(ip string) error {
 	request, err := encodeResetBucketByIPRequest(ip)
 	if err != nil {
 		return err
@@ -65,7 +65,7 @@ func (c HTTPClient) ResetBucketByIP(ip string) error {
 	return decodeResponse(response)
 }
 
-func (c HTTPClient) AddInBlacklist(subnet string) error {
+func (c Client) AddInBlacklist(subnet string) error {
 	request, err := encodeSubnetRequest(subnet)
 	if err != nil {
 		return err
@@ -82,7 +82,7 @@ func (c HTTPClient) AddInBlacklist(subnet string) error {
 	return decodeResponse(response)
 }
 
-func (c HTTPClient) RemoveFromBlacklist(subnet string) error {
+func (c Client) RemoveFromBlacklist(subnet string) error {
 	request, err := encodeSubnetRequest(subnet)
 	if err != nil {
 		return err
@@ -99,7 +99,7 @@ func (c HTTPClient) RemoveFromBlacklist(subnet string) error {
 	return decodeResponse(response)
 }
 
-func (c HTTPClient) AddInWhitelist(subnet string) error {
+func (c Client) AddInWhitelist(subnet string) error {
 	request, err := encodeSubnetRequest(subnet)
 	if err != nil {
 		return err
@@ -116,7 +116,7 @@ func (c HTTPClient) AddInWhitelist(subnet string) error {
 	return decodeResponse(response)
 }
 
-func (c HTTPClient) RemoveFromWhitelist(subnet string) error {
+func (c Client) RemoveFromWhitelist(subnet string) error {
 	request, err := encodeSubnetRequest(subnet)
 	if err != nil {
 		return err
