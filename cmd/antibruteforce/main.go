@@ -43,7 +43,7 @@ func main() {
 
 	zapLogger := logger.New(*dev, &cfg.Logger)
 
-	gRPCListener, err := net.Listen("tcp", cfg.GrpcServer.Addr)
+	gRPCListener, err := net.Listen("tcp", cfg.GRPCServer.Addr)
 	if err != nil {
 		zapLogger.Fatal("gRPC listener", zap.Error(err))
 	}

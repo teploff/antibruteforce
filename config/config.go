@@ -8,19 +8,19 @@ import (
 )
 
 type Config struct {
-	GrpcServer  GrpcServer        `yaml:"grpc_server"`
-	HTTPServer  HTTPServer        `yaml:"http_server"`
+	GRPCServer  GRPCConfig        `yaml:"gRPC_server"`
+	HTTPServer  HTTPConfig        `yaml:"http_server"`
 	Logger      LoggerConfig      `yaml:"logger"`
 	RateLimiter RateLimiterConfig `yaml:"rate_limiter"`
 }
 
-// GrpcServer configuration of grpc-instance service.
-type GrpcServer struct {
+// GRPCConfig configuration of grpc-instance service.
+type GRPCConfig struct {
 	Addr string `yaml:"addr"`
 }
 
-// HTTPServer configuration of http-instance service.
-type HTTPServer struct {
+// HTTPConfig configuration of http-instance service.
+type HTTPConfig struct {
 	Addr string `yaml:"addr"`
 }
 

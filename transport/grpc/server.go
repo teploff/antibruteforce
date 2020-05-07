@@ -66,7 +66,7 @@ func encodeSignInResponse(_ context.Context, grpcResp interface{}) (interface{},
 	}, nil
 }
 
-//recoveryGRPCHandler wrap grpc server, recover them if panic was fired.
+//recoveryGRPCHandler wrap gRPC server, recover them if panic was fired.
 type recoveryGRPCHandler struct {
 	next   kitgrpc.Handler
 	logger log.Logger
@@ -80,7 +80,7 @@ func (rh *recoveryGRPCHandler) ServeGRPC(ctx context.Context, req interface{}) (
 	defer func() {
 		if r := recover(); r != nil {
 			if err, ok := r.(error); ok {
-				_ = rh.logger.Log("msg", "grpc server panic recover", "text", err.Error())
+				_ = rh.logger.Log("msg", "gRPC server panic recover", "text", err.Error())
 			}
 		}
 	}()

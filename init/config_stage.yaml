@@ -1,4 +1,4 @@
-grpc_server:
+gRPC_server:
   addr: "0.0.0.0:8087"
 
 http_server:
