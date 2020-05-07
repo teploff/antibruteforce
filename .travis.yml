@@ -25,6 +25,7 @@ notifications:
 # We can download and extract the golangci-lint binary in one (long) command.
 before_script:
   - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $GOPATH/bin v1.26.0
+  - docker run -d -p 6379:6379 redis
 
 # script always runs to completion (set +e). If we have linter issues AND a
 # failing test, we want to see both. Configure golangci-lint with a
