@@ -106,7 +106,7 @@ func (i *ipList) BlackListLength() int {
 
 func (i *ipList) findElem(ipNet *net.IPNet, list []*net.IPNet) (int, bool) {
 	for index := range list {
-		if list[index] == ipNet {
+		if list[index].IP.String() == ipNet.IP.String() && list[index].Mask.String() == ipNet.Mask.String() {
 			return index, true
 		}
 	}
