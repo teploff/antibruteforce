@@ -43,7 +43,7 @@ func main() {
 
 	zapLogger := logger.New(*dev, &cfg.Logger)
 
-	grpcListener, err := net.Listen("tcp", cfg.GrpcServer.Addr)
+	gRPCListener, err := net.Listen("tcp", cfg.GrpcServer.Addr)
 	if err != nil {
 		zapLogger.Fatal("gRPC listener", zap.Error(err))
 	}
@@ -73,7 +73,7 @@ func main() {
 	}
 
 	go func() {
-		if err = gRPCServer.Serve(grpcListener); !errors.Is(err, grpc.ErrServerStopped) && err != nil {
+		if err = gRPCServer.Serve(gRPCListener); !errors.Is(err, grpc.ErrServerStopped) && err != nil {
 			zapLogger.Fatal("gRPC serve error", zap.Error(err))
 		}
 	}()
