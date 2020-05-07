@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"net"
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/teploff/antibruteforce/domain/entity"
@@ -18,7 +19,7 @@ func makeSignInEndpoint(svc service.AuthService) endpoint.Endpoint {
 		ok, err := svc.LogIn(entity.Credentials{
 			Login:    req.Login,
 			Password: req.Password,
-		}, req.IP)
+		}, net.ParseIP(req.IP))
 
 		if err != nil {
 			return SignInResponse{}, err

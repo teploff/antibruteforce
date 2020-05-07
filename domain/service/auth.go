@@ -1,7 +1,11 @@
 package service
 
-import "github.com/teploff/antibruteforce/domain/entity"
+import (
+	"net"
+
+	"github.com/teploff/antibruteforce/domain/entity"
+)
 
 type AuthService interface {
-	LogIn(credentials entity.Credentials, ip string) (bool, error)
+	LogIn(credentials entity.Credentials, ip net.IP) (bool, error)
 }

@@ -1,6 +1,8 @@
 package service
 
 import (
+	"net"
+
 	"github.com/teploff/antibruteforce/domain/entity"
 	"github.com/teploff/antibruteforce/domain/repository"
 	"github.com/teploff/antibruteforce/domain/service"
@@ -19,8 +21,16 @@ func NewAuthService(rateLimiter *limiter.RateLimiter, ipList repository.IPStorab
 	}
 }
 
-func (a *authService) LogIn(credentials entity.Credentials, ip string) (bool, error) {
-	bruteForce, err := a.rl.IsBruteForce(credentials.Login, credentials.Password, ip)
+func (a *authService) LogIn(credentials entity.Credentials, ip net.IP) (bool, error) {
+	if a.ipList.IsIPInWhiteList(ip) {
+		return true, nil
+	}
+
+	if a.ipList.IsIPInBlackList(ip) {
+		return false, nil
+	}
+
+	bruteForce, err := a.rl.IsBruteForce(credentials.Login, credentials.Password, ip.String())
 	if err != nil || bruteForce {
 		return false, err
 	}
