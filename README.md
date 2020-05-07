@@ -38,7 +38,10 @@ CLI-админка для Anti Brute-Force сервиса
 make build_cli
 ./cli -help
 ```
-![](static/img/cli_help.png)
+
+<p align="center">
+  <img width="460" height="300" src="static/img/cli_help.png">
+</p>
 
 Варианты использования
 
