@@ -40,7 +40,7 @@ make build_cli
 ```
 
 <p align="center">
-  <img width="460" height="300" src="static/img/cli_help.png">
+  <img src="static/img/cli_help.png">
 </p>
 
 Варианты использования
