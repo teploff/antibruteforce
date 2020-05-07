@@ -33,22 +33,22 @@ func NewHTTPServer(endpoints admin.Endpoints, logger *zap.Logger) http.Handler {
 		decodeResetBucketByIPRequest,
 		encodeResponse,
 	), logger))
-	r.Methods("GET").Path("/admin/add_in_blacklist").Handler(withRecovery(kithttp.NewServer(
+	r.Methods("POST").Path("/admin/add_in_blacklist").Handler(withRecovery(kithttp.NewServer(
 		endpoints.AddInBlacklist,
 		decodeAddInBlacklistRequest,
 		encodeResponse,
 	), logger))
-	r.Methods("GET").Path("/admin/remove_from_blacklist").Handler(withRecovery(kithttp.NewServer(
+	r.Methods("POST").Path("/admin/remove_from_blacklist").Handler(withRecovery(kithttp.NewServer(
 		endpoints.RemoveFromBlacklist,
 		decodeRemoveFromBlacklistRequest,
 		encodeResponse,
 	), logger))
-	r.Methods("GET").Path("/admin/add_in_whitelist").Handler(withRecovery(kithttp.NewServer(
+	r.Methods("POST").Path("/admin/add_in_whitelist").Handler(withRecovery(kithttp.NewServer(
 		endpoints.AddInWhitelist,
 		decodeAddInWhitelistRequest,
 		encodeResponse,
 	), logger))
-	r.Methods("GET").Path("/admin/remove_from_whitelist").Handler(withRecovery(kithttp.NewServer(
+	r.Methods("POST").Path("/admin/remove_from_whitelist").Handler(withRecovery(kithttp.NewServer(
 		endpoints.RemoveFromWhitelist,
 		decodeRemoveFromWhitelistRequest,
 		encodeResponse,
@@ -58,7 +58,7 @@ func NewHTTPServer(endpoints admin.Endpoints, logger *zap.Logger) http.Handler {
 }
 
 func decodeResetBucketByLoginRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var request admin.ResetBucketByIPRequest
+	var request admin.ResetBucketByLoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return nil, err
 	}
