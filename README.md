@@ -14,8 +14,8 @@
 1. [ Описание. ](#desc)
 2. [ Конфигурирование Rate Limiter-а. ](#usage)
 3. [ Сборка и запуск проекта. ](#build)
-    1. [ Docker. ](#build-docker)
-    2. [ Makefile. ](#build-makefile)
+    - [ Docker. ](#build-docker)
+    - [ Makefile. ](#build-makefile)
 
 <a name="desc"></a>
 ## 1. Описание
@@ -45,10 +45,10 @@ White/black листы содержат списки адресов сетей, 
 ## 3. Сборка и запуск проекта
 
 <a name="build-docker"></a>
-## 3.1 Docker
+## Docker
 Тут описание про докер
 <a name="build-makefile"></a>
-## 3.1 Makefile
+## Makefile
 Тут описание про makefile
 Сборка проекта (Docker)
 ```
