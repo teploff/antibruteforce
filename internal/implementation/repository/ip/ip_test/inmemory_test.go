@@ -75,10 +75,16 @@ func TestRemovingWhiteAndBlackLists(t *testing.T) {
 	assert.NoError(t, list.RemoveFromWhitelist(whiteNet1))
 	assert.NoError(t, list.RemoveFromWhitelist(whiteNet2))
 	assert.NoError(t, list.RemoveFromWhitelist(whiteNet3))
+	assert.Error(t, list.RemoveFromWhitelist(whiteNet1))
+	assert.Error(t, list.RemoveFromWhitelist(whiteNet2))
+	assert.Error(t, list.RemoveFromWhitelist(whiteNet3))
 
 	assert.NoError(t, list.RemoveFromBlacklist(blackNet1))
 	assert.NoError(t, list.RemoveFromBlacklist(blackNet2))
 	assert.NoError(t, list.RemoveFromBlacklist(blackNet3))
+	assert.Error(t, list.RemoveFromBlacklist(blackNet1))
+	assert.Error(t, list.RemoveFromBlacklist(blackNet2))
+	assert.Error(t, list.RemoveFromBlacklist(blackNet3))
 
 	length, err := list.WhiteListLength()
 	assert.Equal(t, 0, length)
