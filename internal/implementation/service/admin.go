@@ -7,6 +7,7 @@ import (
 	"github.com/teploff/antibruteforce/domain/service"
 )
 
+// adminService implementation of admin service.
 type adminService struct {
 	ipList          repository.IPStorable
 	loginBuckets    repository.BucketStorable

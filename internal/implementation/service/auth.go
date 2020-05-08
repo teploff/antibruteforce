@@ -9,6 +9,7 @@ import (
 	"github.com/teploff/antibruteforce/internal/limiter"
 )
 
+// adminService implementation of authorization service.
 type authService struct {
 	rl     *limiter.RateLimiter
 	ipList repository.IPStorable
