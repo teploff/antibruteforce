@@ -17,6 +17,7 @@ type leakyBucket struct {
 	expireTime time.Duration
 }
 
+// NewLeakyBucket returns instance of Leaky buckets.
 func NewLeakyBucket(rate int, interval, expireTime time.Duration) repository.BucketStorable {
 	return &leakyBucket{
 		buckets:    make(map[string]*entity.Limiter),

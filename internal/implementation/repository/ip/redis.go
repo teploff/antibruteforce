@@ -16,6 +16,7 @@ type redisIPList struct {
 	blackList *redis.Client
 }
 
+// NewRedisIPList returns in redis repository of ip list.
 func NewRedisIPList(cfg config.RedisConfig) (repository.IPStorable, error) {
 	wl := redis.NewClient(&redis.Options{
 		Addr:     cfg.Addr,

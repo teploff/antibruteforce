@@ -6,7 +6,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-const cellerSkip = 2
+const celleSkip = 2
 
 type zapSugarLogger func(msg string, keysAndValues ...interface{})
 
@@ -27,7 +27,7 @@ func (l zapSugarLogger) Log(kv ...interface{}) error {
 func NewZapSugarLogger(logger *zap.Logger, level zapcore.Level) log.Logger {
 	var sugar zapSugarLogger
 
-	sugarLogger := logger.WithOptions(zap.AddCallerSkip(cellerSkip)).Sugar()
+	sugarLogger := logger.WithOptions(zap.AddCallerSkip(celleSkip)).Sugar()
 
 	switch level {
 	case zapcore.DebugLevel:

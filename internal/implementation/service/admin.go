@@ -14,6 +14,7 @@ type adminService struct {
 	ipBuckets       repository.BucketStorable
 }
 
+// NewAdminService returns implementation of admin service.
 func NewAdminService(ipList repository.IPStorable, login, password, ip repository.BucketStorable) service.AdminService {
 	return &adminService{
 		ipList:          ipList,

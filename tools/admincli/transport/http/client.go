@@ -6,10 +6,12 @@ import (
 	"net/http"
 )
 
+// Client to admin-panel via HTTP.
 type Client struct {
 	Addr string
 }
 
+// NewClient returns http-client instance.
 func NewClient(addr string) Client {
 	return Client{Addr: addr}
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/teploff/antibruteforce/domain/service"
 )
 
+// Endpoints for admin-panel.
 type Endpoints struct {
 	ResetBucketByLogin    endpoint.Endpoint
 	ResetBucketByPassword endpoint.Endpoint
@@ -129,6 +130,7 @@ func makeRemoveFromWhitelistEndpoint(svc service.AdminService) endpoint.Endpoint
 	}
 }
 
+// MakeAdminEndpoints provides endpoints for admin-panel.
 func MakeAdminEndpoints(svc service.AdminService) Endpoints {
 	return Endpoints{
 		ResetBucketByLogin:    makeResetBucketByLoginEndpoint(svc),

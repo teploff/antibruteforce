@@ -33,6 +33,7 @@ func NewLimiter(maxCount int, interval time.Duration) *Limiter {
 	}
 }
 
+// LastSeen has last event by current bucket.
 func (l *Limiter) LastSeen() time.Time {
 	return l.lastSeen
 }

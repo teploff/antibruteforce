@@ -10,6 +10,7 @@ import (
 
 const sleepTime = time.Millisecond * 100
 
+// RateLimiter is facade of three type leaky Buckets instance: login, password and ip.
 type RateLimiter struct {
 	loginBuckets    repository.BucketStorable
 	passwordBuckets repository.BucketStorable
@@ -18,6 +19,7 @@ type RateLimiter struct {
 	cancelCh        chan struct{}
 }
 
+// NewRateLimiter returns rate limiter of instance.
 func NewRateLimiter(login, password, ip repository.BucketStorable, d time.Duration) *RateLimiter {
 	return &RateLimiter{
 		loginBuckets:    login,
@@ -28,6 +30,7 @@ func NewRateLimiter(login, password, ip repository.BucketStorable, d time.Durati
 	}
 }
 
+// IsBruteForce checking of brute-force attack.
 func (r *RateLimiter) IsBruteForce(login, password, ip string) (bool, error) {
 	isAllowed, err := isRequestAllowed(r.loginBuckets, login)
 	if err != nil || !isAllowed {
@@ -62,7 +65,7 @@ func isRequestAllowed(rate repository.BucketStorable, keyBucket string) (bool, e
 	return true, nil
 }
 
-// Every r.duration seconds check if the buckets expire?
+// RunGarbageCollector run every r.duration time to delete expired buckets.
 func (r *RateLimiter) RunGarbageCollector() {
 	ticker := time.NewTicker(r.duration)
 

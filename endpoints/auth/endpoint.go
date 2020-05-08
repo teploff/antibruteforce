@@ -9,6 +9,7 @@ import (
 	"github.com/teploff/antibruteforce/domain/service"
 )
 
+// Endpoints for authorization.
 type Endpoints struct {
 	SignIn endpoint.Endpoint
 }
@@ -31,6 +32,7 @@ func makeSignInEndpoint(svc service.AuthService) endpoint.Endpoint {
 	}
 }
 
+// MakeAuthEndpoints for authorization.
 func MakeAuthEndpoints(svc service.AuthService) Endpoints {
 	return Endpoints{
 		SignIn: makeSignInEndpoint(svc),

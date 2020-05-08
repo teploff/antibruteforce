@@ -28,6 +28,7 @@ func (s server) SignIn(ctx context.Context, request *pb.SignInRequest) (*pb.Sign
 	return response.(*pb.SignInResponse), nil
 }
 
+// NewGRPCServer instance of gRPC server.
 func NewGRPCServer(endpoints auth.Endpoints, errLogger log.Logger) *grpc.Server {
 	options := []kitgrpc.ServerOption{
 		kitgrpc.ServerErrorHandler(transport.NewLogErrorHandler(errLogger)),

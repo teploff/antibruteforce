@@ -15,6 +15,7 @@ type ipList struct {
 	mu        *sync.RWMutex
 }
 
+// NewIPList returns in memory repository of ip list.
 func NewIPList() repository.IPStorable {
 	return &ipList{
 		whiteList: make([]*net.IPNet, 0, 10),

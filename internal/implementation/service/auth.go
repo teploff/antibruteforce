@@ -14,6 +14,7 @@ type authService struct {
 	ipList repository.IPStorable
 }
 
+// NewAuthService returns implementation of authorization service.
 func NewAuthService(rateLimiter *limiter.RateLimiter, ipList repository.IPStorable) service.AuthService {
 	return &authService{
 		rl:     rateLimiter,

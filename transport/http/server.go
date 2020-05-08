@@ -15,6 +15,7 @@ var (
 	errRecovery = "error while handling request"
 )
 
+// NewHTTPServer instance of HTTP Handler.
 func NewHTTPServer(endpoints admin.Endpoints, logger *zap.Logger) http.Handler {
 	var r = mux.NewRouter()
 
@@ -124,7 +125,7 @@ func encodeResponse(_ context.Context, w http.ResponseWriter, response interface
 	return json.NewEncoder(w).Encode(response)
 }
 
-// recovery handler middleware.
+// withRecovery handler middleware.
 func withRecovery(h http.Handler, logger *zap.Logger) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
