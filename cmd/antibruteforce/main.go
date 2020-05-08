@@ -15,7 +15,8 @@ import (
 	"github.com/teploff/antibruteforce/endpoints/admin"
 	"github.com/teploff/antibruteforce/endpoints/auth"
 	"github.com/teploff/antibruteforce/infrastructure/logger"
-	"github.com/teploff/antibruteforce/internal/implementation/repository"
+	"github.com/teploff/antibruteforce/internal/implementation/repository/bucket"
+	"github.com/teploff/antibruteforce/internal/implementation/repository/ip"
 	"github.com/teploff/antibruteforce/internal/implementation/service"
 	"github.com/teploff/antibruteforce/internal/limiter"
 	kitgrpc "github.com/teploff/antibruteforce/transport/grpc"
@@ -49,14 +50,14 @@ func main() {
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-	loginBuckets := repository.NewLeakyBucket(cfg.RateLimiter.Login.Rate, cfg.RateLimiter.Login.Interval,
+	loginBuckets := bucket.NewLeakyBucket(cfg.RateLimiter.Login.Rate, cfg.RateLimiter.Login.Interval,
 		cfg.RateLimiter.Login.ExpireTime)
-	passwordBuckets := repository.NewLeakyBucket(cfg.RateLimiter.Password.Rate, cfg.RateLimiter.Password.Interval,
+	passwordBuckets := bucket.NewLeakyBucket(cfg.RateLimiter.Password.Rate, cfg.RateLimiter.Password.Interval,
 		cfg.RateLimiter.Password.ExpireTime)
-	ipBuckets := repository.NewLeakyBucket(cfg.RateLimiter.IP.Rate, cfg.RateLimiter.IP.Interval,
+	ipBuckets := bucket.NewLeakyBucket(cfg.RateLimiter.IP.Rate, cfg.RateLimiter.IP.Interval,
 		cfg.RateLimiter.IP.ExpireTime)
 	rateLimiter := limiter.NewRateLimiter(ctx, loginBuckets, passwordBuckets, ipBuckets, cfg.RateLimiter.GCTime)
-	ipList := repository.NewIPList()
+	ipList := ip.NewIPList()
 
 	go rateLimiter.RunGarbageCollector()
 

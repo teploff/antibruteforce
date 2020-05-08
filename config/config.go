@@ -10,6 +10,7 @@ import (
 type Config struct {
 	GRPCServer  GRPCConfig        `yaml:"gRPC_server"`
 	HTTPServer  HTTPConfig        `yaml:"http_server"`
+	Redis       RedisConfig       `yaml:"redis"`
 	Logger      LoggerConfig      `yaml:"logger"`
 	RateLimiter RateLimiterConfig `yaml:"rate_limiter"`
 }
@@ -22,6 +23,14 @@ type GRPCConfig struct {
 // HTTPConfig configuration of http-instance service.
 type HTTPConfig struct {
 	Addr string `yaml:"addr"`
+}
+
+// RedisConfig configuration of cache database.
+type RedisConfig struct {
+	Addr        string `yaml:"addr"`
+	Password    string `yaml:"password"`
+	DbWhitelist int    `yaml:"db_whitelist"`
+	DbBlacklist int    `yaml:"db_blacklist"`
 }
 
 // LoggerConfig logger configuration.

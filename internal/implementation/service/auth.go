@@ -22,11 +22,21 @@ func NewAuthService(rateLimiter *limiter.RateLimiter, ipList repository.IPStorab
 }
 
 func (a *authService) LogIn(credentials entity.Credentials, ip net.IP) (bool, error) {
-	if a.ipList.IsIPInWhiteList(ip) {
+	inList, err := a.ipList.IsIPInWhiteList(ip)
+	if err != nil {
+		return false, err
+	}
+
+	if inList {
 		return true, nil
 	}
 
-	if a.ipList.IsIPInBlackList(ip) {
+	inList, err = a.ipList.IsIPInBlackList(ip)
+	if err != nil {
+		return false, err
+	}
+
+	if inList {
 		return false, nil
 	}
 

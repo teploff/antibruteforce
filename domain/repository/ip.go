@@ -9,8 +9,8 @@ type IPStorable interface {
 	RemoveFromWhitelist(ipNet *net.IPNet) error
 	AddInBlacklist(ipNet *net.IPNet) error
 	RemoveFromBlacklist(ipNet *net.IPNet) error
-	IsIPInWhiteList(ip net.IP) bool
-	IsIPInBlackList(ip net.IP) bool
-	WhiteListLength() int
-	BlackListLength() int
+	IsIPInWhiteList(ip net.IP) (bool, error)
+	IsIPInBlackList(ip net.IP) (bool, error)
+	WhiteListLength() (int, error)
+	BlackListLength() (int, error)
 }

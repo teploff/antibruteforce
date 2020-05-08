@@ -1,9 +1,10 @@
-package repository
+package ip
 
 import (
 	"net"
 	"sync"
 
+	"github.com/pkg/errors"
 	"github.com/teploff/antibruteforce/domain/repository"
 	"github.com/teploff/antibruteforce/internal/shared"
 )
@@ -28,6 +29,10 @@ func (i *ipList) AddInWhitelist(ipNet *net.IPNet) error {
 
 	if _, exist := i.findElem(ipNet, i.whiteList); exist {
 		return shared.ErrAlreadyExist
+	}
+
+	if _, exist := i.findElem(ipNet, i.blackList); exist {
+		return errors.Wrap(shared.ErrAlreadyExist, "in blacklist")
 	}
 
 	i.whiteList = append(i.whiteList, ipNet)
@@ -57,6 +62,10 @@ func (i *ipList) AddInBlacklist(ipNet *net.IPNet) error {
 		return shared.ErrAlreadyExist
 	}
 
+	if _, exist := i.findElem(ipNet, i.whiteList); exist {
+		return errors.Wrap(shared.ErrAlreadyExist, "in whitelist")
+	}
+
 	i.blackList = append(i.blackList, ipNet)
 
 	return nil
@@ -76,32 +85,32 @@ func (i *ipList) RemoveFromBlacklist(ipNet *net.IPNet) error {
 	return nil
 }
 
-func (i *ipList) IsIPInWhiteList(ip net.IP) bool {
+func (i *ipList) IsIPInWhiteList(ip net.IP) (bool, error) {
 	i.mu.RLock()
 	defer i.mu.RUnlock()
 
-	return i.isIPContains(ip, i.whiteList)
+	return i.isIPContains(ip, i.whiteList), nil
 }
 
-func (i *ipList) IsIPInBlackList(ip net.IP) bool {
+func (i *ipList) IsIPInBlackList(ip net.IP) (bool, error) {
 	i.mu.RLock()
 	defer i.mu.RUnlock()
 
-	return i.isIPContains(ip, i.blackList)
+	return i.isIPContains(ip, i.blackList), nil
 }
 
-func (i *ipList) WhiteListLength() int {
+func (i *ipList) WhiteListLength() (int, error) {
 	i.mu.RLock()
 	defer i.mu.RUnlock()
 
-	return len(i.whiteList)
+	return len(i.whiteList), nil
 }
 
-func (i *ipList) BlackListLength() int {
+func (i *ipList) BlackListLength() (int, error) {
 	i.mu.RLock()
 	defer i.mu.RUnlock()
 
-	return len(i.blackList)
+	return len(i.blackList), nil
 }
 
 func (i *ipList) findElem(ipNet *net.IPNet, list []*net.IPNet) (int, bool) {
@@ -115,8 +124,8 @@ func (i *ipList) findElem(ipNet *net.IPNet, list []*net.IPNet) (int, bool) {
 }
 
 func (i *ipList) isIPContains(ip net.IP, list []*net.IPNet) bool {
-	for index := range list {
-		if list[index].Contains(ip) {
+	for _, ipNet := range list {
+		if ipNet.Contains(ip) {
 			return true
 		}
 	}

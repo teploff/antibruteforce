@@ -23,3 +23,9 @@ rate_limiter:
     interval: 1m
     expire_time: 60s
   gc_time: 90s
+
+redis:
+  addr: "0.0.0.0:6379"
+  password: ""
+  db_whitelist: 1
+  db_blacklist: 2
