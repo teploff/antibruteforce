@@ -269,3 +269,50 @@ func TestBruteForceDoesntExist(t *testing.T) {
 	assert.True(t, isBruteForce)
 	assert.NoError(t, err)
 }
+
+func TestExpiredBucket(t *testing.T) {
+	cfg := config.RateLimiterConfig{
+		Login: config.Login{
+			Rate:       2,
+			Interval:   time.Second,
+			ExpireTime: time.Millisecond * 500,
+		},
+		Password: config.Password{
+			Rate:       2,
+			Interval:   time.Second,
+			ExpireTime: time.Millisecond * 500,
+		},
+		IP: config.IP{
+			Rate:       2,
+			Interval:   time.Second,
+			ExpireTime: time.Millisecond * 500,
+		},
+		GCTime: time.Millisecond * 100,
+	}
+	loginBuckets := bucket.NewLeakyBucket(cfg.Login.Rate, cfg.Login.Interval, cfg.Login.ExpireTime)
+	passwordBuckets := bucket.NewLeakyBucket(cfg.Password.Rate, cfg.Password.Interval, cfg.Password.ExpireTime)
+	ipBuckets := bucket.NewLeakyBucket(cfg.IP.Rate, cfg.IP.Interval, cfg.IP.ExpireTime)
+	rateLimiter := limiter.NewRateLimiter(loginBuckets, passwordBuckets, ipBuckets, cfg.GCTime)
+	go rateLimiter.RunGarbageCollector()
+
+	isBruteForce, err := rateLimiter.IsBruteForce(login, password, ip)
+	assert.False(t, isBruteForce)
+	assert.NoError(t, err)
+	isBruteForce, err = rateLimiter.IsBruteForce(login, password, ip)
+	assert.False(t, isBruteForce)
+	assert.NoError(t, err)
+
+	time.Sleep(time.Millisecond * 700)
+
+	isBruteForce, err = rateLimiter.IsBruteForce(login, password, ip)
+	assert.False(t, isBruteForce)
+	assert.NoError(t, err)
+	isBruteForce, err = rateLimiter.IsBruteForce(login, password, ip)
+	assert.False(t, isBruteForce)
+	assert.NoError(t, err)
+	isBruteForce, err = rateLimiter.IsBruteForce(login, password, ip)
+	assert.True(t, isBruteForce)
+	assert.NoError(t, err)
+
+	rateLimiter.Close()
+}
