@@ -16,6 +16,9 @@
 3. [ Сборка и запуск проекта. ](#build)
     - [ Docker. ](#build-docker)
     - [ Makefile. ](#build-makefile)
+4. [ CLI-админка. ](#cli-admin)
+    - [ Конфигурирование. ](#config)
+    - [ Запуск команд. ](#comm-launch)
 
 <a name="desc"></a>
 ## 1. Описание
@@ -74,29 +77,30 @@ make run
 ```shell
 make test
 ```
-CLI-админка для Anti Brute-Force сервиса
 
-Сборка и запуск опции help
-```shell script
+<a name="cli-admin"></a>
+## 4. CLI-админка
+Сборка и запуск c опции help:
+```shell
 make build_cli
 ./cli -help
 ```
-
+Полное описание опции help для CLI:
 <kbd>
     <p align="center">
       <img src="static/img/cli_help.png">
     </p>
 </kbd>
 
-Варианты использования
-
-Если необходимо указать явно destination адрес brute-force сервиса, необходимо запускать binary-файл с флагом --dest
+<a name="config"></a>
+### Конфигурирование
+Если необходимо указать явно destination адрес до anti brute-force сервиса, необходимо запускать binary-файл с флагом --dest
 ```shell script
 ./cli --dest 192.168.130.132:80
 ```
 
-Запуск команд
-
+<a name="comm-launch"></a>
+### Запуск команд
 Команду можно запускать по полному имени, например:
 ```shell script
 ./cli reset_bucket_by_login teploff
@@ -107,4 +111,3 @@ make build_cli
 ```
 
 Полное описание команд можно увидеть выше или в разделе "COMMANDS", вызвав опцию --help или -h при запуске binary-файла.
-
