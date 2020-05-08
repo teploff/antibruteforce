@@ -6,9 +6,10 @@
 [![codecov](https://codecov.io/gh/teploff/antibruteforce/branch/master/graph/badge.svg)](https://codecov.io/gh/teploff/antibruteforce)
 [![Go Report Card](https://goreportcard.com/badge/github.com/teploff/antibruteforce)](https://goreportcard.com/report/github.com/teploff/antibruteforce)
 
-## Предназначение
 Сервис предназначен для борьбы с подбором паролей при авторизации в какой-либо системе, вызывается перед авторизацией пользователя и может либо разрешить, либо заблокировать попытку.
 Предполагается, что сервис используется только для server-server, т.е. скрыт от конечного пользователя.
+
+## Описание
 
 Сервис ограничивает частоту попыток авторизации для различных комбинаций параметров, например:
 
