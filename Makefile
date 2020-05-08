@@ -8,7 +8,7 @@ run:
 	go build cmd/antibruteforce/main.go && ./main
 
 coverage:
-	go test ./... -v -race -coverprofile=coverage.txt -covermode=atomic -coverpkg=github.com/teploff/antibruteforce/domain/entity,github.com/teploff/antibruteforce/internal/implementation/repository
+	go test ./... -v -race -coverprofile=coverage.txt -covermode=atomic -coverpkg=github.com/teploff/antibruteforce/domain/entity,github.com/teploff/antibruteforce/internal/implementation/repository/bucket,github.com/teploff/antibruteforce/internal/implementation/repository/ip
 
 test:
 	go test ./... -v -race ./...
