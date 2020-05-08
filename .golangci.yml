@@ -4,3 +4,4 @@ linters:
     - gochecknoglobals
     - funlen
     - gosec
+    - dupl

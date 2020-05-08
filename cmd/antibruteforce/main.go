@@ -26,6 +26,8 @@ import (
 	"google.golang.org/grpc"
 )
 
+const cancelTimeout = time.Millisecond * 500
+
 var (
 	configFile = flag.String("config", "./init/config_dev.yaml", "configuration file path")
 	dev        = flag.Bool("dev", false, "dev mode")
@@ -46,15 +48,15 @@ func main() {
 		zapLogger.Fatal("gRPC listener", zap.Error(err))
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
 	loginBuckets := bucket.NewLeakyBucket(cfg.RateLimiter.Login.Rate, cfg.RateLimiter.Login.Interval,
 		cfg.RateLimiter.Login.ExpireTime)
 	passwordBuckets := bucket.NewLeakyBucket(cfg.RateLimiter.Password.Rate, cfg.RateLimiter.Password.Interval,
 		cfg.RateLimiter.Password.ExpireTime)
 	ipBuckets := bucket.NewLeakyBucket(cfg.RateLimiter.IP.Rate, cfg.RateLimiter.IP.Interval,
 		cfg.RateLimiter.IP.ExpireTime)
-	rateLimiter := limiter.NewRateLimiter(ctx, loginBuckets, passwordBuckets, ipBuckets, cfg.RateLimiter.GCTime)
+	rateLimiter := limiter.NewRateLimiter(loginBuckets, passwordBuckets, ipBuckets, cfg.RateLimiter.GCTime)
 	ipList, err := ip.NewRedisIPList(cfg.Redis)
+
 	if err != nil {
 		zapLogger.Fatal("redis connect error", zap.Error(err))
 	}
@@ -88,9 +90,10 @@ func main() {
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	<-done
-
 	gRPCServer.GracefulStop()
+	rateLimiter.Close()
 
+	ctx, cancel := context.WithTimeout(context.Background(), cancelTimeout)
 	if err = srv.Shutdown(ctx); err != nil {
 		zapLogger.Fatal("http shutdown error", zap.Error(err))
 	}
