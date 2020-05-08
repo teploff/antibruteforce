@@ -8,7 +8,7 @@ run:
 	go build cmd/antibruteforce/main.go && ./main
 
 coverage:
-	go test ./... -v -race -coverprofile=coverage.txt -covermode=atomic -coverpkg=./...
+	 go test ./... -v -race -coverprofile=coverage.txt -covermode=atomic -coverpkg=./... -count=1
 
 test:
 	go test ./... -v -race ./...
