@@ -54,7 +54,10 @@ func main() {
 	ipBuckets := bucket.NewLeakyBucket(cfg.RateLimiter.IP.Rate, cfg.RateLimiter.IP.Interval,
 		cfg.RateLimiter.IP.ExpireTime)
 	rateLimiter := limiter.NewRateLimiter(ctx, loginBuckets, passwordBuckets, ipBuckets, cfg.RateLimiter.GCTime)
-	ipList := ip.NewIPList()
+	ipList, err := ip.NewRedisIPList(cfg.Redis)
+	if err != nil {
+		zapLogger.Fatal("redis connect error", zap.Error(err))
+	}
 
 	go rateLimiter.RunGarbageCollector()
 
