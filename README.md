@@ -46,23 +46,34 @@ White/black листы содержат списки адресов сетей, 
 
 <a name="build-docker"></a>
 ## Docker
-Тут описание про докер
-<a name="build-makefile"></a>
-## Makefile
-Тут описание про makefile
-Сборка проекта (Docker)
-```
+Сборка и запуск контейнеров:
+```shell
 git clone https://github.com/teploff/antibruteforce.git
 cd deployments/stage
 docker-compose up -d --build && docker image prune -f 
 ```
-
-Заверешение проекта (Docker)
-```
+Остановка и удаление контенеров:
+```shell
 docker-compose down
 docker system prune --volumes
 ```
+<a name="build-makefile"></a>
+## Makefile
+Сборка сервиса:
+```shell
+git clone https://github.com/teploff/antibruteforce.git
+make build
+```
 
+Запуск сервиса:
+```shell
+make run
+```
+
+Прогонка тестов:
+```shell
+make test
+```
 CLI-админка для Anti Brute-Force сервиса
 
 Сборка и запуск опции help
