@@ -62,7 +62,14 @@ func (r *redisIPList) AddInWhitelist(ipNet *net.IPNet) error {
 }
 
 func (r *redisIPList) RemoveFromWhitelist(ipNet *net.IPNet) error {
-	err := r.whiteList.Del(ipNet.String()).Err()
+	count, err := r.whiteList.Exists(ipNet.String()).Result()
+	if err != nil {
+		return err
+	} else if count == 0 {
+		return pkgerrors.Wrap(shared.ErrNotFound, "in whitelist")
+	}
+
+	err = r.whiteList.Del(ipNet.String()).Err()
 	if err != nil && !errors.Is(err, redis.Nil) {
 		return err
 	}
@@ -89,7 +96,14 @@ func (r *redisIPList) AddInBlacklist(ipNet *net.IPNet) error {
 }
 
 func (r *redisIPList) RemoveFromBlacklist(ipNet *net.IPNet) error {
-	err := r.blackList.Del(ipNet.String()).Err()
+	count, err := r.blackList.Exists(ipNet.String()).Result()
+	if err != nil {
+		return err
+	} else if count == 0 {
+		return pkgerrors.Wrap(shared.ErrNotFound, "in blacklist")
+	}
+
+	err = r.blackList.Del(ipNet.String()).Err()
 	if err != nil && !errors.Is(err, redis.Nil) {
 		return err
 	}
