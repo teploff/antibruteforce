@@ -11,14 +11,14 @@
 
 ## Содержание
 
-1. [ Описание. ](#desc)
-2. [ Конфигурирование Rate Limiter-а. ](#usage)
-3. [ Сборка и запуск проекта. ](#build)
-    - [ Docker. ](#build-docker)
-    - [ Makefile. ](#build-makefile)
-4. [ CLI-админка. ](#cli-admin)
-    - [ Конфигурирование. ](#config)
-    - [ Запуск команд. ](#comm-launch)
+1. [ Описание ](#desc)
+2. [ Конфигурирование Rate Limiter-а ](#usage)
+3. [ Сборка и запуск проекта ](#build)
+    - [ Docker ](#build-docker)
+    - [ Makefile ](#build-makefile)
+4. [ CLI-админка ](#cli-admin)
+    - [ Конфигурирование ](#config)
+    - [ Запуск команд ](#comm-launch)
 
 <a name="desc"></a>
 ## 1. Описание
