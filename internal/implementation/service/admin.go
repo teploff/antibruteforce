@@ -14,7 +14,7 @@ type adminService struct {
 	ipBuckets       repository.BucketStorable
 }
 
-func NewAdminSerice(ipList repository.IPStorable, login, password, ip repository.BucketStorable) service.AdminService {
+func NewAdminService(ipList repository.IPStorable, login, password, ip repository.BucketStorable) service.AdminService {
 	return &adminService{
 		ipList:          ipList,
 		loginBuckets:    login,

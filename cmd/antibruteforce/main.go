@@ -64,7 +64,7 @@ func main() {
 	go rateLimiter.RunGarbageCollector()
 
 	authSvc := service.NewAuthService(rateLimiter, ipList)
-	adminSvc := service.NewAdminSerice(ipList, loginBuckets, passwordBuckets, ipBuckets)
+	adminSvc := service.NewAdminService(ipList, loginBuckets, passwordBuckets, ipBuckets)
 
 	gRPCServer := kitgrpc.NewGRPCServer(auth.MakeAuthEndpoints(authSvc),
 		logger.NewZapSugarLogger(zapLogger, zapcore.ErrorLevel))
