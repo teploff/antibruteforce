@@ -1,9 +1,10 @@
 package http
 
 import (
-	"errors"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/pkg/errors"
 )
 
 func decodeResponse(response *http.Response) error {
@@ -13,8 +14,7 @@ func decodeResponse(response *http.Response) error {
 			return err
 		}
 
-		//nolint:goerr113
-		return errors.New(string(body))
+		return errors.Wrap(http.ErrBodyReadAfterClose, string(body))
 	}
 
 	return nil
