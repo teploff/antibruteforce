@@ -293,6 +293,7 @@ func TestExpiredBucket(t *testing.T) {
 	passwordBuckets := bucket.NewLeakyBucket(cfg.Password.Rate, cfg.Password.Interval, cfg.Password.ExpireTime)
 	ipBuckets := bucket.NewLeakyBucket(cfg.IP.Rate, cfg.IP.Interval, cfg.IP.ExpireTime)
 	rateLimiter := limiter.NewRateLimiter(loginBuckets, passwordBuckets, ipBuckets, cfg.GCTime)
+
 	go rateLimiter.RunGarbageCollector()
 
 	isBruteForce, err := rateLimiter.IsBruteForce(login, password, ip)
