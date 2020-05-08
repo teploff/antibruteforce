@@ -25,7 +25,7 @@ rate_limiter:
   gc_time: 90s
 
 redis:
-  addr: "0.0.0.0:6379"
+  addr: "redis:6379"
   password: ""
   db_whitelist: 1
   db_blacklist: 2

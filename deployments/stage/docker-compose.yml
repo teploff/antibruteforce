@@ -13,9 +13,23 @@ services:
       - "8087:8087"
       - "8088:8088"
     restart: always
+    depends_on:
+      - redis
+    networks:
+      - stagenetwork
+  redis:
+    image: redis
+    volumes:
+      - redis_storage:/var/lib/grafana
+    ports:
+      - 6379:6379
+    restart: always
     networks:
       - stagenetwork
 
 networks:
   stagenetwork:
     driver: bridge
+
+volumes:
+  redis_storage:
