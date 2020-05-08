@@ -51,7 +51,7 @@ func main() {
 			},
 			{
 				Name:    "reset_bucket_by_ip",
-				Aliases: []string{"rli"},
+				Aliases: []string{"rbi"},
 				Usage:   "reset leaky bucket in the rate limiter for given ip",
 				Action: func(c *cli.Context) error {
 					httpClient := http.NewClient(c.String("dest"))

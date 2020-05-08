@@ -101,6 +101,5 @@ func main() {
 	defer func() {
 		// extra handling here
 		cancel()
-		time.Sleep(time.Second)
 	}()
 }

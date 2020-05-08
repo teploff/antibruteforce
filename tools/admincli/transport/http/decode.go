@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
+	"github.com/teploff/antibruteforce/internal/shared"
 )
 
 func decodeResponse(response *http.Response) error {
@@ -14,7 +15,7 @@ func decodeResponse(response *http.Response) error {
 			return err
 		}
 
-		return errors.Wrap(http.ErrBodyReadAfterClose, string(body))
+		return errors.Wrap(shared.ErrEmpty, string(body))
 	}
 
 	return nil
