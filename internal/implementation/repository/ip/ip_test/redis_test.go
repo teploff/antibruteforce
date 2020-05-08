@@ -10,7 +10,6 @@ import (
 	"github.com/teploff/antibruteforce/internal/implementation/repository/ip"
 )
 
-//nolint:gochecknoglobals
 var cfg = config.RedisConfig{
 	Addr:        "0.0.0.0:6379",
 	Password:    "",
@@ -107,7 +106,6 @@ func TestRedisRemovingWhiteAndBlackLists(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-//nolint:funlen
 func TestRedisBelongWhiteAndBlackLists(t *testing.T) {
 	list, err := ip.NewRedisIPList(cfg)
 	assert.NoError(t, err)

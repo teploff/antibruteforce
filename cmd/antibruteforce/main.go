@@ -27,13 +27,10 @@ import (
 )
 
 var (
-	//nolint:gochecknoglobals
 	configFile = flag.String("config", "./init/config_dev.yaml", "configuration file path")
-	//nolint:gochecknoglobals
-	dev = flag.Bool("dev", false, "dev mode")
+	dev        = flag.Bool("dev", false, "dev mode")
 )
 
-//nolint:funlen
 func main() {
 	flag.Parse()
 

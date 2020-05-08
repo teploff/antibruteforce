@@ -88,7 +88,6 @@ func TestRemovingWhiteAndBlackLists(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-//nolint:funlen
 func TestBelongWhiteAndBlackLists(t *testing.T) {
 	list := ip.NewIPList()
 	_, whiteNet1, _ := net.ParseCIDR("192.168.130.0/24")
