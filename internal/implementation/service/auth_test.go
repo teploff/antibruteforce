@@ -16,17 +16,17 @@ import (
 
 var (
 	cfgRedis = config.RedisConfig{
-		Addr:        "0.0.0.0:6379",
+		Addr:        "0.0.0.0:6380",
 		Password:    "",
 		DbWhitelist: 14,
 		DbBlacklist: 15,
 	}
 	credentials = entity.Credentials{
-		Login:    "login",
-		Password: "password",
+		Login:    "loginAuth",
+		Password: "passwordAuth",
 	}
-	IP           = net.ParseIP("192.168.130.132")
-	_, subNet, _ = net.ParseCIDR("192.168.130.0/24")
+	IP           = net.ParseIP("192.168.199.132")
+	_, subNet, _ = net.ParseCIDR("192.168.199.0/24")
 )
 
 func TestIPInWhitelist(t *testing.T) {
@@ -70,6 +70,7 @@ func TestIPInWhitelist(t *testing.T) {
 	allow, err = authSvc.LogIn(credentials, IP)
 	assert.NoError(t, err)
 	assert.True(t, allow)
+	assert.NoError(t, flushAll(cfgRedis))
 }
 
 func TestIPInBlacklist(t *testing.T) {
@@ -114,6 +115,7 @@ func TestIPInBlacklist(t *testing.T) {
 	allow, err = authSvc.LogIn(credentials, IP)
 	assert.NoError(t, err)
 	assert.False(t, allow)
+	assert.NoError(t, flushAll(cfgRedis))
 }
 
 func TestBruteForceByLogin(t *testing.T) {
@@ -155,6 +157,7 @@ func TestBruteForceByLogin(t *testing.T) {
 	allow, err = authSvc.LogIn(credentials, IP)
 	assert.NoError(t, err)
 	assert.False(t, allow)
+	assert.NoError(t, flushAll(cfgRedis))
 }
 
 func TestBruteForceByPassword(t *testing.T) {
@@ -196,6 +199,7 @@ func TestBruteForceByPassword(t *testing.T) {
 	allow, err = authSvc.LogIn(credentials, IP)
 	assert.NoError(t, err)
 	assert.False(t, allow)
+	assert.NoError(t, flushAll(cfgRedis))
 }
 
 func TestBruteForceByIP(t *testing.T) {
@@ -237,6 +241,7 @@ func TestBruteForceByIP(t *testing.T) {
 	allow, err = authSvc.LogIn(credentials, IP)
 	assert.NoError(t, err)
 	assert.False(t, allow)
+	assert.NoError(t, flushAll(cfgRedis))
 }
 
 func flushAll(cfg config.RedisConfig) error {
@@ -245,12 +250,27 @@ func flushAll(cfg config.RedisConfig) error {
 		Password: cfg.Password,
 		DB:       cfg.DbWhitelist,
 	})
+	bl := redis.NewClient(&redis.Options{
+		Addr:     cfg.Addr,
+		Password: cfg.Password,
+		DB:       cfg.DbBlacklist,
+	})
 
 	if _, err := wl.Ping().Result(); err != nil {
 		return err
 	}
 
+	if _, err := bl.Ping().Result(); err != nil {
+		return err
+	}
+
 	_, err := wl.FlushAll().Result()
+
+	if err != nil {
+		return err
+	}
+
+	_, err = bl.FlushAll().Result()
 
 	if err != nil {
 		return err

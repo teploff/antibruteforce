@@ -1,15 +1,14 @@
-package ip_test
+package ip
 
 import (
 	"net"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/teploff/antibruteforce/internal/implementation/repository/ip"
 )
 
 func TestElementsAlreadyExistInWhiteAndBlacklists(t *testing.T) {
-	list := ip.NewIPList()
+	list := NewIPList()
 	_, whiteNet, _ := net.ParseCIDR("192.168.128.0/24")
 	_, blackNet, _ := net.ParseCIDR("192.168.131.0/24")
 
@@ -28,7 +27,7 @@ func TestElementsAlreadyExistInWhiteAndBlacklists(t *testing.T) {
 }
 
 func TestElementInWhiteAndBlacklistsSimultaneously(t *testing.T) {
-	list := ip.NewIPList()
+	list := NewIPList()
 	_, ipNet, _ := net.ParseCIDR("192.168.128.0/24")
 
 	assert.NoError(t, list.AddInWhitelist(ipNet))
@@ -55,7 +54,7 @@ func TestElementInWhiteAndBlacklistsSimultaneously(t *testing.T) {
 }
 
 func TestRemovingWhiteAndBlackLists(t *testing.T) {
-	list := ip.NewIPList()
+	list := NewIPList()
 	_, whiteNet1, _ := net.ParseCIDR("192.168.128.0/24")
 	_, whiteNet2, _ := net.ParseCIDR("192.168.129.0/24")
 	_, whiteNet3, _ := net.ParseCIDR("192.168.130.0/24")
@@ -95,7 +94,7 @@ func TestRemovingWhiteAndBlackLists(t *testing.T) {
 }
 
 func TestBelongWhiteAndBlackLists(t *testing.T) {
-	list := ip.NewIPList()
+	list := NewIPList()
 	_, whiteNet1, _ := net.ParseCIDR("192.168.130.0/24")
 	_, whiteNet2, _ := net.ParseCIDR("192.168.0.0/16")
 	_, whiteNet3, _ := net.ParseCIDR("192.0.0.0/8")

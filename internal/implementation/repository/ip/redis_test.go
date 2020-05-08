@@ -1,4 +1,4 @@
-package ip_test
+package ip
 
 import (
 	"net"
@@ -7,7 +7,6 @@ import (
 	"github.com/go-redis/redis/v7"
 	"github.com/stretchr/testify/assert"
 	"github.com/teploff/antibruteforce/config"
-	"github.com/teploff/antibruteforce/internal/implementation/repository/ip"
 )
 
 var cfg = config.RedisConfig{
@@ -18,7 +17,7 @@ var cfg = config.RedisConfig{
 }
 
 func TestRedisElementsAlreadyExistInWhiteAndBlacklists(t *testing.T) {
-	list, err := ip.NewRedisIPList(cfg)
+	list, err := NewRedisIPList(cfg)
 	assert.NoError(t, err)
 	assert.NoError(t, flushAll(cfg))
 
@@ -37,10 +36,11 @@ func TestRedisElementsAlreadyExistInWhiteAndBlacklists(t *testing.T) {
 	length, err = list.BlackListLength()
 	assert.Equal(t, 1, length)
 	assert.NoError(t, err)
+	assert.NoError(t, flushAll(cfg))
 }
 
 func TestRedisElementInWhiteAndBlacklistsSimultaneously(t *testing.T) {
-	list, err := ip.NewRedisIPList(cfg)
+	list, err := NewRedisIPList(cfg)
 	assert.NoError(t, err)
 	assert.NoError(t, flushAll(cfg))
 
@@ -67,10 +67,11 @@ func TestRedisElementInWhiteAndBlacklistsSimultaneously(t *testing.T) {
 	length, err = list.BlackListLength()
 	assert.Equal(t, 1, length)
 	assert.NoError(t, err)
+	assert.NoError(t, flushAll(cfg))
 }
 
 func TestRedisRemovingWhiteAndBlackLists(t *testing.T) {
-	list, err := ip.NewRedisIPList(cfg)
+	list, err := NewRedisIPList(cfg)
 	assert.NoError(t, err)
 	assert.NoError(t, flushAll(cfg))
 
@@ -104,10 +105,11 @@ func TestRedisRemovingWhiteAndBlackLists(t *testing.T) {
 	length, err = list.BlackListLength()
 	assert.Equal(t, 0, length)
 	assert.NoError(t, err)
+	assert.NoError(t, flushAll(cfg))
 }
 
 func TestRedisBelongWhiteAndBlackLists(t *testing.T) {
-	list, err := ip.NewRedisIPList(cfg)
+	list, err := NewRedisIPList(cfg)
 	assert.NoError(t, err)
 	assert.NoError(t, flushAll(cfg))
 
@@ -223,6 +225,7 @@ func TestRedisBelongWhiteAndBlackLists(t *testing.T) {
 	length, err = list.BlackListLength()
 	assert.Equal(t, 3, length)
 	assert.NoError(t, err)
+	assert.NoError(t, flushAll(cfg))
 }
 
 func flushAll(cfg config.RedisConfig) error {
@@ -231,12 +234,27 @@ func flushAll(cfg config.RedisConfig) error {
 		Password: cfg.Password,
 		DB:       cfg.DbWhitelist,
 	})
+	bl := redis.NewClient(&redis.Options{
+		Addr:     cfg.Addr,
+		Password: cfg.Password,
+		DB:       cfg.DbBlacklist,
+	})
 
 	if _, err := wl.Ping().Result(); err != nil {
 		return err
 	}
 
+	if _, err := bl.Ping().Result(); err != nil {
+		return err
+	}
+
 	_, err := wl.FlushAll().Result()
+
+	if err != nil {
+		return err
+	}
+
+	_, err = bl.FlushAll().Result()
 
 	if err != nil {
 		return err

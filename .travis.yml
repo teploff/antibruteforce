@@ -26,6 +26,7 @@ notifications:
 before_script:
   - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $GOPATH/bin v1.26.0
   - docker run -d -p 6379:6379 redis
+  - docker run -d -p 6380:6379 redis
 
 # script always runs to completion (set +e). If we have linter issues AND a
 # failing test, we want to see both. Configure golangci-lint with a
