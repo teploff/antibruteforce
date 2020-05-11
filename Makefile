@@ -11,7 +11,7 @@ coverage:
 	 go test ./... -v -race -coverprofile=coverage.txt -covermode=atomic -coverpkg=./... -count=1
 
 test:
-	go test ./... -v -race ./...
+	go test ./... -v -race ./... -count=1
 
 lint:
 	golangci-lint run --enable-all
