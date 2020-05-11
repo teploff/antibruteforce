@@ -15,7 +15,7 @@
 2. [ Конфигурирование Rate Limiter-а ](#usage)
 3. [ Сборка и запуск проекта ](#build)
     - [ Docker ](#build-docker)
-    - [ Makefile ](#build-makefile)
+    - [ Binary file ](#build-binary)
 4. [ CLI-админка ](#cli-admin)
     - [ Конфигурирование ](#config)
     - [ Запуск команд ](#comm-launch)
@@ -52,16 +52,14 @@ White/black листы содержат списки адресов сетей, 
 Сборка и запуск контейнеров:
 ```shell
 git clone https://github.com/teploff/antibruteforce.git
-cd deployments/stage
-docker-compose up -d --build && docker image prune -f 
+make docker_run
 ```
 Остановка и удаление контенеров:
 ```shell
-docker-compose down
-docker system prune --volumes
+make docker_stop
 ```
-<a name="build-makefile"></a>
-## Makefile
+<a name="build-binary"></a>
+## Binary file
 Сборка сервиса:
 ```shell
 git clone https://github.com/teploff/antibruteforce.git
@@ -76,6 +74,11 @@ make run
 Прогонка тестов:
 ```shell
 make test
+```
+
+Прогона линтеров:
+```shell
+make lint
 ```
 
 <a name="cli-admin"></a>
