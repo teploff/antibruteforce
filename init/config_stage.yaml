@@ -24,8 +24,6 @@ rate_limiter:
     expire_time: 60s
   gc_time: 90s
 
-redis:
-  addr: "redis:6379"
-  password: ""
-  db_whitelist: 1
-  db_blacklist: 2
+mongo:
+  addr: "mongo:27017"
+  db_name: "admin"

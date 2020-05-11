@@ -1,0 +1,35 @@
+gRPC_server:
+  addr: "0.0.0.0:8112"
+
+http_server:
+  addr: "0.0.0.0:8113"
+
+logger:
+  file_name: "./auth.log"
+  max_size: 50
+  level: "info"
+
+rate_limiter:
+  login:
+    rate: 2
+    interval: 1s
+    expire_time: 10m
+  password:
+    rate: 2
+    interval: 1s
+    expire_time: 10m
+  ip:
+    rate: 2
+    interval: 1s
+    expire_time: 10m
+  gc_time: 20m
+
+redis:
+  addr: "localhost:6397"
+  password: ""
+  db_whitelist: 14
+  db_blacklist: 15
+
+mongo:
+  addr: "localhost:27017"
+  db_name: "test"

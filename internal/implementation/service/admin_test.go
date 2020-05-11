@@ -1,257 +1,125 @@
 package service
 
 import (
+	"context"
+	"fmt"
+	"net"
 	"testing"
-	"time"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 	"github.com/teploff/antibruteforce/config"
+	"github.com/teploff/antibruteforce/domain/entity"
+	"github.com/teploff/antibruteforce/domain/repository"
 	"github.com/teploff/antibruteforce/internal/implementation/repository/bucket"
 	"github.com/teploff/antibruteforce/internal/implementation/repository/ip"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func TestResetBucketByLogin(t *testing.T) {
-	cfgRL := config.RateLimiterConfig{
-		Login: config.Login{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 10,
-		},
-		Password: config.Password{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 10,
-		},
-		IP: config.IP{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 1,
-		},
-		GCTime: time.Minute * 20,
-	}
-
-	loginBuckets := bucket.NewLeakyBucket(cfgRL.Login.Rate, cfgRL.Login.Interval, cfgRL.Login.ExpireTime)
-	passwordBuckets := bucket.NewLeakyBucket(cfgRL.Password.Rate, cfgRL.Password.Interval, cfgRL.Password.ExpireTime)
-	ipBuckets := bucket.NewLeakyBucket(cfgRL.IP.Rate, cfgRL.IP.Interval, cfgRL.IP.ExpireTime)
-	ipList, err := ip.NewRedisIPList(cfgRedis)
-
-	assert.NoError(t, err)
-	assert.NoError(t, flushAll(cfgRedis))
-
-	adminSvc := NewAdminService(ipList, loginBuckets, passwordBuckets, ipBuckets)
-	_, err = loginBuckets.Add(credentials.Login)
-	assert.NoError(t, err)
-	assert.NoError(t, adminSvc.ResetBucketByLogin(credentials.Login))
-	assert.Error(t, adminSvc.ResetBucketByLogin(credentials.Login))
-	assert.NoError(t, flushAll(cfgRedis))
+type AdminServiceTestSuit struct {
+	suite.Suite
+	cfg         config.Config
+	client      *mongo.Client
+	credentials entity.Credentials
+	userIP      net.IP
+	subNet      *net.IPNet
+	login       repository.BucketStorable
+	password    repository.BucketStorable
+	ip          repository.BucketStorable
+	ipList      repository.IPStorable
 }
 
-func TestResetBucketByPassword(t *testing.T) {
-	cfgRL := config.RateLimiterConfig{
-		Login: config.Login{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 10,
-		},
-		Password: config.Password{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 10,
-		},
-		IP: config.IP{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 1,
-		},
-		GCTime: time.Minute * 20,
-	}
-
-	loginBuckets := bucket.NewLeakyBucket(cfgRL.Login.Rate, cfgRL.Login.Interval, cfgRL.Login.ExpireTime)
-	passwordBuckets := bucket.NewLeakyBucket(cfgRL.Password.Rate, cfgRL.Password.Interval, cfgRL.Password.ExpireTime)
-	ipBuckets := bucket.NewLeakyBucket(cfgRL.IP.Rate, cfgRL.IP.Interval, cfgRL.IP.ExpireTime)
-	ipList, err := ip.NewRedisIPList(cfgRedis)
-
-	assert.NoError(t, err)
-	assert.NoError(t, flushAll(cfgRedis))
-
-	adminSvc := NewAdminService(ipList, loginBuckets, passwordBuckets, ipBuckets)
-	_, err = passwordBuckets.Add(credentials.Password)
-	assert.NoError(t, err)
-	assert.NoError(t, adminSvc.ResetBucketByPassword(credentials.Password))
-	assert.Error(t, adminSvc.ResetBucketByPassword(credentials.Password))
-	assert.NoError(t, flushAll(cfgRedis))
+func TestAdminService(t *testing.T) {
+	suite.Run(t, new(AdminServiceTestSuit))
 }
 
-func TestResetBucketByIP(t *testing.T) {
-	cfgRL := config.RateLimiterConfig{
-		Login: config.Login{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 10,
-		},
-		Password: config.Password{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 10,
-		},
-		IP: config.IP{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 1,
-		},
-		GCTime: time.Minute * 20,
+func (a *AdminServiceTestSuit) SetupSuite() {
+	cfg, _ := config.LoadFromFile("../../../init/config_test.yaml")
+	a.cfg = cfg
+	a.cfg.Mongo.DBName = "test_admin"
+
+	a.login = bucket.NewLeakyBucket(a.cfg.RateLimiter.Login.Rate, a.cfg.RateLimiter.Login.Interval,
+		a.cfg.RateLimiter.Login.ExpireTime)
+	a.password = bucket.NewLeakyBucket(a.cfg.RateLimiter.Password.Rate, a.cfg.RateLimiter.Password.Interval,
+		a.cfg.RateLimiter.Password.ExpireTime)
+	a.ip = bucket.NewLeakyBucket(a.cfg.RateLimiter.IP.Rate, a.cfg.RateLimiter.IP.Interval, a.cfg.RateLimiter.IP.ExpireTime)
+	a.ipList, _ = ip.NewMongoIPList(a.cfg.Mongo)
+
+	a.client, _ = mongo.NewClient(options.Client().ApplyURI(fmt.Sprintf("mongodb://%s", a.cfg.Mongo.Addr)))
+	_ = a.client.Connect(context.TODO())
+
+	a.credentials = entity.Credentials{
+		Login:    "loginAuth",
+		Password: "passwordAuth",
 	}
-
-	loginBuckets := bucket.NewLeakyBucket(cfgRL.Login.Rate, cfgRL.Login.Interval, cfgRL.Login.ExpireTime)
-	passwordBuckets := bucket.NewLeakyBucket(cfgRL.Password.Rate, cfgRL.Password.Interval, cfgRL.Password.ExpireTime)
-	ipBuckets := bucket.NewLeakyBucket(cfgRL.IP.Rate, cfgRL.IP.Interval, cfgRL.IP.ExpireTime)
-	ipList, err := ip.NewRedisIPList(cfgRedis)
-
-	assert.NoError(t, err)
-	assert.NoError(t, flushAll(cfgRedis))
-
-	adminSvc := NewAdminService(ipList, loginBuckets, passwordBuckets, ipBuckets)
-	_, err = ipBuckets.Add(IP.String())
-	assert.NoError(t, err)
-	assert.NoError(t, adminSvc.ResetBucketByIP(IP))
-	assert.Error(t, adminSvc.ResetBucketByIP(IP))
-	assert.NoError(t, flushAll(cfgRedis))
+	a.userIP = net.ParseIP("192.168.199.132")
+	_, a.subNet, _ = net.ParseCIDR("192.168.199.0/24")
 }
 
-func TestAddInBlacklist(t *testing.T) {
-	cfgRL := config.RateLimiterConfig{
-		Login: config.Login{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 10,
-		},
-		Password: config.Password{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 10,
-		},
-		IP: config.IP{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 1,
-		},
-		GCTime: time.Minute * 20,
-	}
-
-	loginBuckets := bucket.NewLeakyBucket(cfgRL.Login.Rate, cfgRL.Login.Interval, cfgRL.Login.ExpireTime)
-	passwordBuckets := bucket.NewLeakyBucket(cfgRL.Password.Rate, cfgRL.Password.Interval, cfgRL.Password.ExpireTime)
-	ipBuckets := bucket.NewLeakyBucket(cfgRL.IP.Rate, cfgRL.IP.Interval, cfgRL.IP.ExpireTime)
-	ipList, err := ip.NewRedisIPList(cfgRedis)
-
-	assert.NoError(t, err)
-	assert.NoError(t, flushAll(cfgRedis))
-
-	adminSvc := NewAdminService(ipList, loginBuckets, passwordBuckets, ipBuckets)
-	assert.NoError(t, adminSvc.AddInBlacklist(subNet))
-	assert.Error(t, adminSvc.AddInBlacklist(subNet))
-	assert.NoError(t, flushAll(cfgRedis))
+func (a *AdminServiceTestSuit) TearDownSuite() {
+	_ = a.ipList.Close()
+	_ = a.client.Disconnect(context.TODO())
 }
 
-func TestRemoveFromBlacklist(t *testing.T) {
-	cfgRL := config.RateLimiterConfig{
-		Login: config.Login{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 10,
-		},
-		Password: config.Password{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 10,
-		},
-		IP: config.IP{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 1,
-		},
-		GCTime: time.Minute * 20,
-	}
-
-	loginBuckets := bucket.NewLeakyBucket(cfgRL.Login.Rate, cfgRL.Login.Interval, cfgRL.Login.ExpireTime)
-	passwordBuckets := bucket.NewLeakyBucket(cfgRL.Password.Rate, cfgRL.Password.Interval, cfgRL.Password.ExpireTime)
-	ipBuckets := bucket.NewLeakyBucket(cfgRL.IP.Rate, cfgRL.IP.Interval, cfgRL.IP.ExpireTime)
-	ipList, err := ip.NewRedisIPList(cfgRedis)
-
-	assert.NoError(t, err)
-	assert.NoError(t, flushAll(cfgRedis))
-
-	adminSvc := NewAdminService(ipList, loginBuckets, passwordBuckets, ipBuckets)
-	assert.NoError(t, adminSvc.AddInBlacklist(subNet))
-	assert.NoError(t, adminSvc.RemoveFromBlacklist(subNet))
-	assert.Error(t, adminSvc.RemoveFromBlacklist(subNet))
-	assert.NoError(t, flushAll(cfgRedis))
+func (a *AdminServiceTestSuit) TearDownTest() {
+	_ = a.client.Database(a.cfg.Mongo.DBName).Collection("whitelist").Drop(context.TODO())
+	_ = a.client.Database(a.cfg.Mongo.DBName).Collection("blacklist").Drop(context.TODO())
+	a.login = bucket.NewLeakyBucket(a.cfg.RateLimiter.Login.Rate, a.cfg.RateLimiter.Login.Interval,
+		a.cfg.RateLimiter.Login.ExpireTime)
+	a.password = bucket.NewLeakyBucket(a.cfg.RateLimiter.Password.Rate, a.cfg.RateLimiter.Password.Interval,
+		a.cfg.RateLimiter.Password.ExpireTime)
+	a.ip = bucket.NewLeakyBucket(a.cfg.RateLimiter.IP.Rate, a.cfg.RateLimiter.IP.Interval,
+		a.cfg.RateLimiter.IP.ExpireTime)
 }
 
-func TestAddInWhitelist(t *testing.T) {
-	cfgRL := config.RateLimiterConfig{
-		Login: config.Login{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 10,
-		},
-		Password: config.Password{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 10,
-		},
-		IP: config.IP{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 1,
-		},
-		GCTime: time.Minute * 20,
-	}
+func (a *AdminServiceTestSuit) TestResetBucketByLogin() {
+	adminSvc := NewAdminService(a.ipList, a.login, a.password, a.ip)
+	_, err := a.login.Add(a.credentials.Login)
+	a.Assert().NoError(err)
 
-	loginBuckets := bucket.NewLeakyBucket(cfgRL.Login.Rate, cfgRL.Login.Interval, cfgRL.Login.ExpireTime)
-	passwordBuckets := bucket.NewLeakyBucket(cfgRL.Password.Rate, cfgRL.Password.Interval, cfgRL.Password.ExpireTime)
-	ipBuckets := bucket.NewLeakyBucket(cfgRL.IP.Rate, cfgRL.IP.Interval, cfgRL.IP.ExpireTime)
-	ipList, err := ip.NewRedisIPList(cfgRedis)
-
-	assert.NoError(t, err)
-	assert.NoError(t, flushAll(cfgRedis))
-
-	adminSvc := NewAdminService(ipList, loginBuckets, passwordBuckets, ipBuckets)
-	assert.NoError(t, adminSvc.AddInWhitelist(subNet))
-	assert.Error(t, adminSvc.AddInWhitelist(subNet))
-	assert.NoError(t, flushAll(cfgRedis))
+	a.Assert().NoError(adminSvc.ResetBucketByLogin(a.credentials.Login))
+	a.Assert().Error(adminSvc.ResetBucketByLogin(a.credentials.Login))
 }
 
-func TestRemoveFromWhitelist(t *testing.T) {
-	cfgRL := config.RateLimiterConfig{
-		Login: config.Login{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 10,
-		},
-		Password: config.Password{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 10,
-		},
-		IP: config.IP{
-			Rate:       2,
-			Interval:   time.Second,
-			ExpireTime: time.Minute * 1,
-		},
-		GCTime: time.Minute * 20,
-	}
+func (a *AdminServiceTestSuit) TestResetBucketByPassword() {
+	adminSvc := NewAdminService(a.ipList, a.login, a.password, a.ip)
+	_, err := a.password.Add(a.credentials.Password)
+	a.Assert().NoError(err)
 
-	loginBuckets := bucket.NewLeakyBucket(cfgRL.Login.Rate, cfgRL.Login.Interval, cfgRL.Login.ExpireTime)
-	passwordBuckets := bucket.NewLeakyBucket(cfgRL.Password.Rate, cfgRL.Password.Interval, cfgRL.Password.ExpireTime)
-	ipBuckets := bucket.NewLeakyBucket(cfgRL.IP.Rate, cfgRL.IP.Interval, cfgRL.IP.ExpireTime)
-	ipList, err := ip.NewRedisIPList(cfgRedis)
+	a.Assert().NoError(adminSvc.ResetBucketByPassword(a.credentials.Password))
+	a.Assert().Error(adminSvc.ResetBucketByPassword(a.credentials.Password))
+}
 
-	assert.NoError(t, err)
-	assert.NoError(t, flushAll(cfgRedis))
+func (a *AdminServiceTestSuit) TestResetBucketByIP() {
+	adminSvc := NewAdminService(a.ipList, a.login, a.password, a.ip)
+	_, err := a.ip.Add(a.userIP.String())
+	a.Assert().NoError(err)
+	a.Assert().NoError(adminSvc.ResetBucketByIP(a.userIP))
+	a.Assert().Error(adminSvc.ResetBucketByIP(a.userIP))
+}
 
-	adminSvc := NewAdminService(ipList, loginBuckets, passwordBuckets, ipBuckets)
-	assert.NoError(t, adminSvc.AddInWhitelist(subNet))
-	assert.NoError(t, adminSvc.RemoveFromWhitelist(subNet))
-	assert.Error(t, adminSvc.RemoveFromWhitelist(subNet))
-	assert.NoError(t, flushAll(cfgRedis))
+func (a *AdminServiceTestSuit) TestAddInBlacklist() {
+	adminSvc := NewAdminService(a.ipList, a.login, a.password, a.ip)
+	a.Assert().NoError(adminSvc.AddInBlacklist(a.subNet))
+	a.Assert().Error(adminSvc.AddInBlacklist(a.subNet))
+}
+
+func (a *AdminServiceTestSuit) TestRemoveFromBlacklist() {
+	adminSvc := NewAdminService(a.ipList, a.login, a.password, a.ip)
+	a.Assert().NoError(adminSvc.AddInBlacklist(a.subNet))
+	a.Assert().NoError(adminSvc.RemoveFromBlacklist(a.subNet))
+	a.Assert().Error(adminSvc.RemoveFromBlacklist(a.subNet))
+}
+
+func (a *AdminServiceTestSuit) TestAddInWhitelist() {
+	adminSvc := NewAdminService(a.ipList, a.login, a.password, a.ip)
+	a.Assert().NoError(adminSvc.AddInWhitelist(a.subNet))
+	a.Assert().Error(adminSvc.AddInWhitelist(a.subNet))
+}
+
+func (a *AdminServiceTestSuit) TestRemoveFromWhitelist() {
+	adminSvc := NewAdminService(a.ipList, a.login, a.password, a.ip)
+	a.Assert().NoError(adminSvc.AddInWhitelist(a.subNet))
+	a.Assert().NoError(adminSvc.RemoveFromWhitelist(a.subNet))
+	a.Assert().Error(adminSvc.RemoveFromWhitelist(a.subNet))
 }

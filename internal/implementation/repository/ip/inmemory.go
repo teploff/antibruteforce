@@ -15,6 +15,10 @@ type ipList struct {
 	mu        *sync.RWMutex
 }
 
+func (i *ipList) Close() error {
+	return nil
+}
+
 // NewIPList returns in memory repository of ip list.
 func NewIPList() repository.IPStorable {
 	return &ipList{

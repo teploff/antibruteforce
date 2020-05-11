@@ -30,4 +30,5 @@ type IPStorable interface {
 	IsIPInBlackList(ip net.IP) (bool, error)
 	WhiteListLength() (int, error)
 	BlackListLength() (int, error)
+	Close() error
 }

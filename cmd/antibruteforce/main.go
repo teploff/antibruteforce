@@ -28,9 +28,9 @@ func main() {
 
 	zapLogger := logger.New(*dev, &cfg.Logger)
 
-	ipList, err := ip.NewRedisIPList(cfg.Redis)
+	ipList, err := ip.NewMongoIPList(cfg.Mongo)
 	if err != nil {
-		zapLogger.Fatal("redis connect error", zap.Error(err))
+		zapLogger.Fatal("mongodb connect error", zap.Error(err))
 	}
 
 	app := pkg.NewApp(cfg,

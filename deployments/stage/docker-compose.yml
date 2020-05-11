@@ -1,6 +1,6 @@
 version: '3.7'
 
-# sudo docker-compose up -d --build
+# docker-compose up -d --build && docker image prune -f
 
 services:
   antibruteforce:
@@ -14,15 +14,16 @@ services:
       - "8088:8088"
     restart: always
     depends_on:
-      - redis
+      - mongo
     networks:
       - stagenetwork
-  redis:
-    image: redis
+  mongo:
+    image: mongo
+    container_name: mongo
     volumes:
-      - redis_storage:/var/lib/grafana
+      - mongo_storage:/data/db
     ports:
-      - 6379:6379
+      - 27017:27017
     restart: always
     networks:
       - stagenetwork
@@ -32,4 +33,4 @@ networks:
     driver: bridge
 
 volumes:
-  redis_storage:
+  mongo_storage:
