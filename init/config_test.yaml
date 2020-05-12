@@ -1,8 +1,8 @@
 gRPC_server:
-  addr: "0.0.0.0:8112"
+  addr: "localhost:8112"
 
 http_server:
-  addr: "0.0.0.0:8113"
+  addr: "localhost:8113"
 
 logger:
   file_name: "./auth.log"

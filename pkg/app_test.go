@@ -215,8 +215,8 @@ func (h *HTTPAdminPanelTestSuit) SetupSuite() {
 
 	h.cfg = cfg
 	h.cfg.Mongo.DBName = "gRPC_http_admin_panel"
-	h.cfg.GRPCServer.Addr = "0.0.0.0:8114"
-	h.cfg.HTTPServer.Addr = "0.0.0.0:8115"
+	h.cfg.GRPCServer.Addr = "localhost:8114"
+	h.cfg.HTTPServer.Addr = "localhost:8115"
 
 	h.credentials = entity.Credentials{
 		Login:    "loginAuth",
