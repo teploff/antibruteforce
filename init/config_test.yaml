@@ -12,15 +12,15 @@ logger:
 rate_limiter:
   login:
     rate: 2
-    interval: 1s
+    interval: 50ms
     expire_time: 10m
   password:
-    rate: 2
-    interval: 1s
+    rate: 3
+    interval: 50ms
     expire_time: 10m
   ip:
-    rate: 2
-    interval: 1s
+    rate: 4
+    interval: 50ms
     expire_time: 10m
   gc_time: 20m
 
