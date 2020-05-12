@@ -204,6 +204,7 @@ type HTTPAdminPanelTestSuit struct {
 	ipList      repository.IPStorable
 	credentials entity.Credentials
 	userIP      net.IP
+	subnet      *net.IPNet
 	app         *App
 }
 
@@ -224,6 +225,7 @@ func (h *HTTPAdminPanelTestSuit) SetupSuite() {
 	}
 
 	h.userIP = net.ParseIP("192.168.199.132")
+	_, h.subnet, _ = net.ParseCIDR("192.168.199.0/24")
 
 	h.client, _ = mongo.NewClient(options.Client().ApplyURI(fmt.Sprintf("mongodb://%s", h.cfg.Mongo.Addr)))
 	_ = h.client.Connect(context.TODO())
@@ -420,6 +422,200 @@ func (h *HTTPAdminPanelTestSuit) TestResetByIP() {
 	})
 	h.Assert().NoError(err)
 	h.Assert().True(response.Ok)
+}
+
+func (h *HTTPAdminPanelTestSuit) TestAddInBlacklist() {
+	conn, err := grpc.Dial(h.cfg.GRPCServer.Addr, grpc.WithInsecure())
+	h.Assert().NoError(err)
+
+	client := pb.NewAuthClient(conn)
+
+	response, err := client.SignIn(context.TODO(), &pb.SignInRequest{
+		Login:    h.credentials.Login,
+		Password: h.credentials.Password,
+		Ip:       h.userIP.String(),
+	})
+	h.Assert().NoError(err)
+	h.Assert().True(response.Ok)
+
+	marshalReq, err := json.Marshal(admin.SubnetRequest{IPWithMask: h.subnet.String()})
+	h.Assert().NoError(err)
+	url := fmt.Sprintf("http://%s/admin/add_in_blacklist", h.cfg.HTTPServer.Addr)
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(marshalReq))
+	h.Assert().NoError(err)
+
+	defer resp.Body.Close()
+	h.Assert().NoError(decodeResponse(resp))
+
+	response, err = client.SignIn(context.TODO(), &pb.SignInRequest{
+		Login:    h.credentials.Login,
+		Password: h.credentials.Password,
+		Ip:       h.userIP.String(),
+	})
+	h.Assert().NoError(err)
+	h.Assert().False(response.Ok)
+}
+
+func (h *HTTPAdminPanelTestSuit) TestRemoveFromBlacklist() {
+	conn, err := grpc.Dial(h.cfg.GRPCServer.Addr, grpc.WithInsecure())
+	h.Assert().NoError(err)
+
+	client := pb.NewAuthClient(conn)
+
+	response, err := client.SignIn(context.TODO(), &pb.SignInRequest{
+		Login:    h.credentials.Login,
+		Password: h.credentials.Password,
+		Ip:       h.userIP.String(),
+	})
+	h.Assert().NoError(err)
+	h.Assert().True(response.Ok)
+
+	marshalReq, err := json.Marshal(admin.SubnetRequest{IPWithMask: h.subnet.String()})
+	h.Assert().NoError(err)
+	url := fmt.Sprintf("http://%s/admin/add_in_blacklist", h.cfg.HTTPServer.Addr)
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(marshalReq))
+	h.Assert().NoError(err)
+
+	defer resp.Body.Close()
+	h.Assert().NoError(decodeResponse(resp))
+
+	response, err = client.SignIn(context.TODO(), &pb.SignInRequest{
+		Login:    h.credentials.Login,
+		Password: h.credentials.Password,
+		Ip:       h.userIP.String(),
+	})
+	h.Assert().NoError(err)
+	h.Assert().False(response.Ok)
+
+	marshalReq, err = json.Marshal(admin.SubnetRequest{IPWithMask: h.subnet.String()})
+	h.Assert().NoError(err)
+	url = fmt.Sprintf("http://%s/admin/remove_from_blacklist", h.cfg.HTTPServer.Addr)
+	resp, err = http.Post(url, "application/json", bytes.NewBuffer(marshalReq))
+	h.Assert().NoError(err)
+
+	defer resp.Body.Close()
+	h.Assert().NoError(decodeResponse(resp))
+
+	response, err = client.SignIn(context.TODO(), &pb.SignInRequest{
+		Login:    h.credentials.Login,
+		Password: h.credentials.Password,
+		Ip:       h.userIP.String(),
+	})
+	h.Assert().NoError(err)
+	h.Assert().True(response.Ok)
+}
+
+func (h *HTTPAdminPanelTestSuit) TestAddInWhitelist() {
+	conn, err := grpc.Dial(h.cfg.GRPCServer.Addr, grpc.WithInsecure())
+	h.Assert().NoError(err)
+
+	marshalReq, err := json.Marshal(admin.SubnetRequest{IPWithMask: h.subnet.String()})
+	h.Assert().NoError(err)
+	url := fmt.Sprintf("http://%s/admin/add_in_whitelist", h.cfg.HTTPServer.Addr)
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(marshalReq))
+	h.Assert().NoError(err)
+
+	defer resp.Body.Close()
+	h.Assert().NoError(decodeResponse(resp))
+
+	client := pb.NewAuthClient(conn)
+
+	response, err := client.SignIn(context.TODO(), &pb.SignInRequest{
+		Login:    h.credentials.Login,
+		Password: h.credentials.Password,
+		Ip:       h.userIP.String(),
+	})
+	h.Assert().NoError(err)
+	h.Assert().True(response.Ok)
+
+	response, err = client.SignIn(context.TODO(), &pb.SignInRequest{
+		Login:    h.credentials.Login,
+		Password: h.credentials.Password,
+		Ip:       h.userIP.String(),
+	})
+	h.Assert().NoError(err)
+	h.Assert().True(response.Ok)
+
+	response, err = client.SignIn(context.TODO(), &pb.SignInRequest{
+		Login:    h.credentials.Login,
+		Password: h.credentials.Password,
+		Ip:       h.userIP.String(),
+	})
+	h.Assert().NoError(err)
+	h.Assert().True(response.Ok)
+}
+
+func (h *HTTPAdminPanelTestSuit) TestRemoveFromWhitelist() {
+	conn, err := grpc.Dial(h.cfg.GRPCServer.Addr, grpc.WithInsecure())
+	h.Assert().NoError(err)
+
+	marshalReq, err := json.Marshal(admin.SubnetRequest{IPWithMask: h.subnet.String()})
+	h.Assert().NoError(err)
+	url := fmt.Sprintf("http://%s/admin/add_in_whitelist", h.cfg.HTTPServer.Addr)
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(marshalReq))
+	h.Assert().NoError(err)
+
+	defer resp.Body.Close()
+	h.Assert().NoError(decodeResponse(resp))
+
+	client := pb.NewAuthClient(conn)
+
+	response, err := client.SignIn(context.TODO(), &pb.SignInRequest{
+		Login:    h.credentials.Login,
+		Password: h.credentials.Password,
+		Ip:       h.userIP.String(),
+	})
+	h.Assert().NoError(err)
+	h.Assert().True(response.Ok)
+
+	response, err = client.SignIn(context.TODO(), &pb.SignInRequest{
+		Login:    h.credentials.Login,
+		Password: h.credentials.Password,
+		Ip:       h.userIP.String(),
+	})
+	h.Assert().NoError(err)
+	h.Assert().True(response.Ok)
+
+	response, err = client.SignIn(context.TODO(), &pb.SignInRequest{
+		Login:    h.credentials.Login,
+		Password: h.credentials.Password,
+		Ip:       h.userIP.String(),
+	})
+	h.Assert().NoError(err)
+	h.Assert().True(response.Ok)
+
+	marshalReq, err = json.Marshal(admin.SubnetRequest{IPWithMask: h.subnet.String()})
+	h.Assert().NoError(err)
+	url = fmt.Sprintf("http://%s/admin/remove_from_whitelist", h.cfg.HTTPServer.Addr)
+	resp, err = http.Post(url, "application/json", bytes.NewBuffer(marshalReq))
+	h.Assert().NoError(err)
+
+	defer resp.Body.Close()
+	h.Assert().NoError(decodeResponse(resp))
+
+	response, err = client.SignIn(context.TODO(), &pb.SignInRequest{
+		Login:    h.credentials.Login,
+		Password: h.credentials.Password,
+		Ip:       h.userIP.String(),
+	})
+	h.Assert().NoError(err)
+	h.Assert().True(response.Ok)
+
+	response, err = client.SignIn(context.TODO(), &pb.SignInRequest{
+		Login:    h.credentials.Login,
+		Password: h.credentials.Password,
+		Ip:       h.userIP.String(),
+	})
+	h.Assert().NoError(err)
+	h.Assert().True(response.Ok)
+
+	response, err = client.SignIn(context.TODO(), &pb.SignInRequest{
+		Login:    h.credentials.Login,
+		Password: h.credentials.Password,
+		Ip:       h.userIP.String(),
+	})
+	h.Assert().NoError(err)
+	h.Assert().False(response.Ok)
 }
 
 func decodeResponse(response *http.Response) error {
