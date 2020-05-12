@@ -3,6 +3,10 @@ package pkg
 import (
 	"context"
 	"fmt"
+	"net"
+	"testing"
+	"time"
+
 	"github.com/stretchr/testify/suite"
 	"github.com/teploff/antibruteforce/config"
 	"github.com/teploff/antibruteforce/domain/entity"
@@ -12,9 +16,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
-	"net"
-	"testing"
-	"time"
 )
 
 type GRPCBruteForceTestSuit struct {
@@ -32,6 +33,7 @@ func (g *GRPCBruteForceTestSuit) SetupSuite() {
 	if err != nil {
 		panic(err)
 	}
+
 	g.cfg = cfg
 	g.cfg.Mongo.DBName = "gRPC_brute_force"
 
@@ -63,6 +65,7 @@ func (g *GRPCBruteForceTestSuit) TearDownSuite() {
 func (g *GRPCBruteForceTestSuit) TearDownTest() {
 	_ = g.client.Database(g.cfg.Mongo.DBName).Collection("whitelist").Drop(context.TODO())
 	_ = g.client.Database(g.cfg.Mongo.DBName).Collection("blacklist").Drop(context.TODO())
+
 	time.Sleep(time.Millisecond * 50)
 }
 
