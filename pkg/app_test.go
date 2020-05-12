@@ -295,6 +295,13 @@ func (h *HTTPAdminPanelTestSuit) TestResetByLogin() {
 	defer resp.Body.Close()
 	h.Assert().NoError(decodeResponse(resp))
 
+	h.Assert().NoError(err)
+	resp, err = http.Post(url, "application/json", bytes.NewBuffer(marshalReq))
+	h.Assert().NoError(err)
+
+	defer resp.Body.Close()
+	h.Assert().Error(decodeResponse(resp))
+
 	response, err = client.SignIn(context.TODO(), &pb.SignInRequest{
 		Login:    h.credentials.Login,
 		Password: h.credentials.Password,
@@ -350,6 +357,13 @@ func (h *HTTPAdminPanelTestSuit) TestResetByPassword() {
 
 	defer resp.Body.Close()
 	h.Assert().NoError(decodeResponse(resp))
+
+	h.Assert().NoError(err)
+	resp, err = http.Post(url, "application/json", bytes.NewBuffer(marshalReq))
+	h.Assert().NoError(err)
+
+	defer resp.Body.Close()
+	h.Assert().Error(decodeResponse(resp))
 
 	response, err = client.SignIn(context.TODO(), &pb.SignInRequest{
 		Login:    h.credentials.Login,
@@ -415,6 +429,13 @@ func (h *HTTPAdminPanelTestSuit) TestResetByIP() {
 	defer resp.Body.Close()
 	h.Assert().NoError(decodeResponse(resp))
 
+	h.Assert().NoError(err)
+	resp, err = http.Post(url, "application/json", bytes.NewBuffer(marshalReq))
+	h.Assert().NoError(err)
+
+	defer resp.Body.Close()
+	h.Assert().Error(decodeResponse(resp))
+
 	response, err = client.SignIn(context.TODO(), &pb.SignInRequest{
 		Login:    h.credentials.Login,
 		Password: h.credentials.Password,
@@ -447,6 +468,13 @@ func (h *HTTPAdminPanelTestSuit) TestAddInBlacklist() {
 	defer resp.Body.Close()
 	h.Assert().NoError(decodeResponse(resp))
 
+	h.Assert().NoError(err)
+	resp, err = http.Post(url, "application/json", bytes.NewBuffer(marshalReq))
+	h.Assert().NoError(err)
+
+	defer resp.Body.Close()
+	h.Assert().Error(decodeResponse(resp))
+
 	response, err = client.SignIn(context.TODO(), &pb.SignInRequest{
 		Login:    h.credentials.Login,
 		Password: h.credentials.Password,
@@ -478,6 +506,13 @@ func (h *HTTPAdminPanelTestSuit) TestRemoveFromBlacklist() {
 
 	defer resp.Body.Close()
 	h.Assert().NoError(decodeResponse(resp))
+
+	h.Assert().NoError(err)
+	resp, err = http.Post(url, "application/json", bytes.NewBuffer(marshalReq))
+	h.Assert().NoError(err)
+
+	defer resp.Body.Close()
+	h.Assert().Error(decodeResponse(resp))
 
 	response, err = client.SignIn(context.TODO(), &pb.SignInRequest{
 		Login:    h.credentials.Login,
@@ -518,6 +553,13 @@ func (h *HTTPAdminPanelTestSuit) TestAddInWhitelist() {
 	defer resp.Body.Close()
 	h.Assert().NoError(decodeResponse(resp))
 
+	h.Assert().NoError(err)
+	resp, err = http.Post(url, "application/json", bytes.NewBuffer(marshalReq))
+	h.Assert().NoError(err)
+
+	defer resp.Body.Close()
+	h.Assert().Error(decodeResponse(resp))
+
 	client := pb.NewAuthClient(conn)
 
 	response, err := client.SignIn(context.TODO(), &pb.SignInRequest{
@@ -557,6 +599,13 @@ func (h *HTTPAdminPanelTestSuit) TestRemoveFromWhitelist() {
 
 	defer resp.Body.Close()
 	h.Assert().NoError(decodeResponse(resp))
+
+	h.Assert().NoError(err)
+	resp, err = http.Post(url, "application/json", bytes.NewBuffer(marshalReq))
+	h.Assert().NoError(err)
+
+	defer resp.Body.Close()
+	h.Assert().Error(decodeResponse(resp))
 
 	client := pb.NewAuthClient(conn)
 
@@ -624,7 +673,6 @@ func decodeResponse(response *http.Response) error {
 		if err != nil {
 			return err
 		}
-
 		return errors.Wrap(shared.ErrEmpty, string(body))
 	}
 
