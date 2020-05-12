@@ -673,6 +673,7 @@ func decodeResponse(response *http.Response) error {
 		if err != nil {
 			return err
 		}
+
 		return errors.Wrap(shared.ErrEmpty, string(body))
 	}
 
