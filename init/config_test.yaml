@@ -24,12 +24,6 @@ rate_limiter:
     expire_time: 10m
   gc_time: 20m
 
-redis:
-  addr: "localhost:6397"
-  password: ""
-  db_whitelist: 14
-  db_blacklist: 15
-
 mongo:
   addr: "localhost:27017"
   db_name: "test"
