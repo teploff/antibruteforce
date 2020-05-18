@@ -5,8 +5,8 @@ import (
 	"net"
 
 	"github.com/go-kit/kit/endpoint"
-	"github.com/teploff/antibruteforce/domain/entity"
-	"github.com/teploff/antibruteforce/domain/service"
+	"github.com/teploff/antibruteforce/internal/domain/entity"
+	"github.com/teploff/antibruteforce/internal/domain/service"
 )
 
 // Endpoints for authorization.

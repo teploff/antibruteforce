@@ -7,9 +7,9 @@ import (
 	"syscall"
 
 	"github.com/teploff/antibruteforce/config"
-	"github.com/teploff/antibruteforce/infrastructure/logger"
 	"github.com/teploff/antibruteforce/internal/app"
 	"github.com/teploff/antibruteforce/internal/implementation/repository/ip"
+	"github.com/teploff/antibruteforce/internal/infrastructure/logger"
 	"go.uber.org/zap"
 )
 

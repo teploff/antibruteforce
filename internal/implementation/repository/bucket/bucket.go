@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/teploff/antibruteforce/domain/entity"
-	"github.com/teploff/antibruteforce/domain/repository"
+	"github.com/teploff/antibruteforce/internal/domain/entity"
+	"github.com/teploff/antibruteforce/internal/domain/repository"
 	"github.com/teploff/antibruteforce/internal/shared"
 )
 

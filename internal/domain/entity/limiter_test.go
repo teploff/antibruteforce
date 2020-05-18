@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/teploff/antibruteforce/domain/entity"
+	"github.com/teploff/antibruteforce/internal/domain/entity"
 )
 
 func TestLessRequestsPerMinuteThanAllowed(t *testing.T) {

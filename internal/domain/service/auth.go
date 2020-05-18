@@ -3,7 +3,7 @@ package service
 import (
 	"net"
 
-	"github.com/teploff/antibruteforce/domain/entity"
+	"github.com/teploff/antibruteforce/internal/domain/entity"
 )
 
 // AuthService provides interface for authorization business-logic

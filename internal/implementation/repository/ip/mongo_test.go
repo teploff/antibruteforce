@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 	"github.com/teploff/antibruteforce/config"
-	"github.com/teploff/antibruteforce/domain/repository"
+	"github.com/teploff/antibruteforce/internal/domain/repository"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
