@@ -38,7 +38,7 @@ func main() {
 		app.WithLeakyBuckets(cfg.RateLimiter),
 		app.WithIPList(ipList))
 
-	application.Run()
+	go application.Run()
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
