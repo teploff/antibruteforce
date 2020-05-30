@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/pkg/errors"
-	"github.com/teploff/antibruteforce/domain/repository"
+	"github.com/teploff/antibruteforce/internal/domain/repository"
 	"github.com/teploff/antibruteforce/internal/shared"
 )
 

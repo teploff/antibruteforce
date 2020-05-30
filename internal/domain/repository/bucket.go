@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/teploff/antibruteforce/domain/entity"
+	"github.com/teploff/antibruteforce/internal/domain/entity"
 )
 
 // BucketStorable provides storable interface for leaky buckets

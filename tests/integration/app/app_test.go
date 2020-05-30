@@ -1,4 +1,4 @@
-package pkg
+package app
 
 import (
 	"bytes"
@@ -14,12 +14,13 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/suite"
 	"github.com/teploff/antibruteforce/config"
-	"github.com/teploff/antibruteforce/domain/entity"
-	"github.com/teploff/antibruteforce/domain/repository"
-	"github.com/teploff/antibruteforce/endpoints/admin"
+	"github.com/teploff/antibruteforce/internal/app"
+	"github.com/teploff/antibruteforce/internal/domain/entity"
+	"github.com/teploff/antibruteforce/internal/domain/repository"
+	"github.com/teploff/antibruteforce/internal/endpoints/admin"
 	"github.com/teploff/antibruteforce/internal/implementation/repository/ip"
 	"github.com/teploff/antibruteforce/internal/shared"
-	"github.com/teploff/antibruteforce/transport/grpc/pb"
+	"github.com/teploff/antibruteforce/internal/transport/grpc/pb"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
@@ -32,11 +33,11 @@ type GRPCBruteForceTestSuit struct {
 	ipList      repository.IPStorable
 	credentials entity.Credentials
 	userIP      net.IP
-	app         *App
+	application *app.App
 }
 
 func (g *GRPCBruteForceTestSuit) SetupSuite() {
-	cfg, err := config.LoadFromFile("../init/config_test.yaml")
+	cfg, err := config.LoadFromFile("../../../init/config_test.yaml")
 	if err != nil {
 		panic(err)
 	}
@@ -56,12 +57,12 @@ func (g *GRPCBruteForceTestSuit) SetupSuite() {
 
 	g.ipList, _ = ip.NewMongoIPList(g.cfg.Mongo)
 
-	g.app = NewApp(g.cfg,
-		WithLeakyBuckets(g.cfg.RateLimiter),
-		WithIPList(g.ipList),
+	g.application = app.NewApp(g.cfg,
+		app.WithLeakyBuckets(g.cfg.RateLimiter),
+		app.WithIPList(g.ipList),
 	)
 
-	go g.app.Run()
+	go g.application.Run()
 }
 
 func (g *GRPCBruteForceTestSuit) TearDownSuite() {
@@ -205,11 +206,11 @@ type HTTPAdminPanelTestSuit struct {
 	credentials entity.Credentials
 	userIP      net.IP
 	subnet      *net.IPNet
-	app         *App
+	app         *app.App
 }
 
 func (h *HTTPAdminPanelTestSuit) SetupSuite() {
-	cfg, err := config.LoadFromFile("../init/config_test.yaml")
+	cfg, err := config.LoadFromFile("../../../init/config_test.yaml")
 	if err != nil {
 		panic(err)
 	}
@@ -232,9 +233,9 @@ func (h *HTTPAdminPanelTestSuit) SetupSuite() {
 
 	h.ipList, _ = ip.NewMongoIPList(h.cfg.Mongo)
 
-	h.app = NewApp(h.cfg,
-		WithLeakyBuckets(h.cfg.RateLimiter),
-		WithIPList(h.ipList),
+	h.app = app.NewApp(h.cfg,
+		app.WithLeakyBuckets(h.cfg.RateLimiter),
+		app.WithIPList(h.ipList),
 	)
 
 	go h.app.Run()

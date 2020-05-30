@@ -7,7 +7,7 @@ import (
 
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	"github.com/teploff/antibruteforce/endpoints/admin"
+	"github.com/teploff/antibruteforce/internal/endpoints/admin"
 	"go.uber.org/zap"
 )
 

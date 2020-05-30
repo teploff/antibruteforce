@@ -3,9 +3,9 @@ package service
 import (
 	"net"
 
-	"github.com/teploff/antibruteforce/domain/entity"
-	"github.com/teploff/antibruteforce/domain/repository"
-	"github.com/teploff/antibruteforce/domain/service"
+	"github.com/teploff/antibruteforce/internal/domain/entity"
+	"github.com/teploff/antibruteforce/internal/domain/repository"
+	"github.com/teploff/antibruteforce/internal/domain/service"
 	"github.com/teploff/antibruteforce/internal/limiter"
 )
 

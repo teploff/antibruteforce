@@ -3,8 +3,8 @@ package service
 import (
 	"net"
 
-	"github.com/teploff/antibruteforce/domain/repository"
-	"github.com/teploff/antibruteforce/domain/service"
+	"github.com/teploff/antibruteforce/internal/domain/repository"
+	"github.com/teploff/antibruteforce/internal/domain/service"
 )
 
 // adminService implementation of admin service.

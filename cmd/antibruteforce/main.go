@@ -7,9 +7,9 @@ import (
 	"syscall"
 
 	"github.com/teploff/antibruteforce/config"
-	"github.com/teploff/antibruteforce/infrastructure/logger"
+	"github.com/teploff/antibruteforce/internal/app"
 	"github.com/teploff/antibruteforce/internal/implementation/repository/ip"
-	"github.com/teploff/antibruteforce/pkg"
+	"github.com/teploff/antibruteforce/internal/infrastructure/logger"
 	"go.uber.org/zap"
 )
 
@@ -33,16 +33,16 @@ func main() {
 		zapLogger.Fatal("mongodb connect error", zap.Error(err))
 	}
 
-	app := pkg.NewApp(cfg,
-		pkg.WithLogger(zapLogger),
-		pkg.WithLeakyBuckets(cfg.RateLimiter),
-		pkg.WithIPList(ipList))
+	application := app.NewApp(cfg,
+		app.WithLogger(zapLogger),
+		app.WithLeakyBuckets(cfg.RateLimiter),
+		app.WithIPList(ipList))
 
-	app.Run()
+	go application.Run()
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	<-done
 
-	app.Stop()
+	application.Stop()
 }

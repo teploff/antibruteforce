@@ -8,8 +8,8 @@ import (
 
 	"github.com/stretchr/testify/suite"
 	"github.com/teploff/antibruteforce/config"
-	"github.com/teploff/antibruteforce/domain/entity"
-	"github.com/teploff/antibruteforce/domain/repository"
+	"github.com/teploff/antibruteforce/internal/domain/entity"
+	"github.com/teploff/antibruteforce/internal/domain/repository"
 	"github.com/teploff/antibruteforce/internal/implementation/repository/bucket"
 	"github.com/teploff/antibruteforce/internal/implementation/repository/ip"
 	"github.com/teploff/antibruteforce/internal/limiter"

@@ -1,4 +1,4 @@
-package pkg
+package app
 
 import (
 	"context"
@@ -8,15 +8,15 @@ import (
 	"time"
 
 	"github.com/teploff/antibruteforce/config"
-	"github.com/teploff/antibruteforce/domain/repository"
-	"github.com/teploff/antibruteforce/endpoints/admin"
-	"github.com/teploff/antibruteforce/endpoints/auth"
-	"github.com/teploff/antibruteforce/infrastructure/logger"
+	"github.com/teploff/antibruteforce/internal/domain/repository"
+	"github.com/teploff/antibruteforce/internal/endpoints/admin"
+	"github.com/teploff/antibruteforce/internal/endpoints/auth"
 	"github.com/teploff/antibruteforce/internal/implementation/repository/bucket"
 	"github.com/teploff/antibruteforce/internal/implementation/service"
+	"github.com/teploff/antibruteforce/internal/infrastructure/logger"
 	"github.com/teploff/antibruteforce/internal/limiter"
-	kitgrpc "github.com/teploff/antibruteforce/transport/grpc"
-	"github.com/teploff/antibruteforce/transport/http"
+	kitgrpc "github.com/teploff/antibruteforce/internal/transport/grpc"
+	"github.com/teploff/antibruteforce/internal/transport/http"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
@@ -25,17 +25,17 @@ import (
 const cancelTimeout = time.Millisecond * 500
 
 // AppOption via application.
-type AppOption func(*App)
+type Option func(*App)
 
 // WithLogger adding logger option.
-func WithLogger(l *zap.Logger) AppOption {
+func WithLogger(l *zap.Logger) Option {
 	return func(a *App) {
 		a.logger = l
 	}
 }
 
 // WithLeakyBuckets adding leaky buckets for logins, passwords and ips.
-func WithLeakyBuckets(cfg config.RateLimiterConfig) AppOption {
+func WithLeakyBuckets(cfg config.RateLimiterConfig) Option {
 	return func(a *App) {
 		a.loginBucket = bucket.NewLeakyBucket(cfg.Login.Rate, cfg.Login.Interval, cfg.Login.ExpireTime)
 		a.passwordBucket = bucket.NewLeakyBucket(cfg.Password.Rate, cfg.Password.Interval, cfg.Password.ExpireTime)
@@ -44,7 +44,7 @@ func WithLeakyBuckets(cfg config.RateLimiterConfig) AppOption {
 }
 
 // WithIPList adding ip list for admin panel.
-func WithIPList(ipList repository.IPStorable) AppOption {
+func WithIPList(ipList repository.IPStorable) Option {
 	return func(a *App) {
 		a.ipList = ipList
 	}
@@ -62,7 +62,7 @@ type App struct {
 }
 
 // NewApp returns instance of app.
-func NewApp(cfg config.Config, opts ...AppOption) *App {
+func NewApp(cfg config.Config, opts ...Option) *App {
 	app := &App{
 		cfg:             cfg,
 		logger:          zap.NewNop(),

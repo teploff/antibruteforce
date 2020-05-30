@@ -3,7 +3,7 @@ package http
 import (
 	"encoding/json"
 
-	"github.com/teploff/antibruteforce/endpoints/admin"
+	"github.com/teploff/antibruteforce/internal/endpoints/admin"
 )
 
 func encodeResetBucketByLoginRequest(login string) ([]byte, error) {
