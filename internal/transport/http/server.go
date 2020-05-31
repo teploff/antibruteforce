@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"encoding/json"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -54,6 +55,7 @@ func NewHTTPServer(endpoints admin.Endpoints, logger *zap.Logger) http.Handler {
 		decodeRemoveFromWhitelistRequest,
 		encodeResponse,
 	), logger))
+	r.Methods("GET").Path("/metrics").Handler(promhttp.Handler())
 
 	return r
 }

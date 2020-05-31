@@ -11,6 +11,7 @@ import (
 	"github.com/teploff/antibruteforce/internal/domain/repository"
 	"github.com/teploff/antibruteforce/internal/endpoints/admin"
 	"github.com/teploff/antibruteforce/internal/endpoints/auth"
+	"github.com/teploff/antibruteforce/internal/implementation/middleware"
 	"github.com/teploff/antibruteforce/internal/implementation/repository/bucket"
 	"github.com/teploff/antibruteforce/internal/implementation/service"
 	"github.com/teploff/antibruteforce/internal/infrastructure/logger"
@@ -86,7 +87,7 @@ func (a *App) Run() {
 	rateLimiter := limiter.NewRateLimiter(a.loginBucket, a.passwordBucket, a.ipBucket, a.cfg.RateLimiter.GCTime)
 
 	authSvc := service.NewAuthService(rateLimiter, a.ipList)
-	adminSvc := service.NewAdminService(a.ipList, a.loginBucket, a.passwordBucket, a.ipBucket)
+	adminSvc := middleware.NewPrometheusMiddleware(service.NewAdminService(a.ipList, a.loginBucket, a.passwordBucket, a.ipBucket))
 
 	gRPCServer := kitgrpc.NewGRPCServer(auth.MakeAuthEndpoints(authSvc),
 		logger.NewZapSugarLogger(a.logger, zapcore.ErrorLevel))
