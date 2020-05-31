@@ -2,10 +2,14 @@ package grpc
 
 import (
 	"context"
+	"time"
 
 	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/metrics"
+	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	"github.com/go-kit/kit/transport"
 	kitgrpc "github.com/go-kit/kit/transport/grpc"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/teploff/antibruteforce/internal/endpoints/auth"
 	"github.com/teploff/antibruteforce/internal/transport/grpc/pb"
 	"google.golang.org/grpc"
@@ -15,11 +19,20 @@ import (
 
 const maxReceivedMsgSize = 1024 * 1024 * 20
 
+var dur metrics.Histogram = kitprometheus.NewSummaryFrom(prometheus.SummaryOpts{
+	Namespace: "antibruteforce",
+	Subsystem: "auth",
+	Name:      "latency_sign_in_request",
+	Help:      "Total time (in seconds) spent serving requests by sign_in.",
+}, []string{})
+
 type server struct {
 	signIn kitgrpc.Handler
 }
 
 func (s server) SignIn(ctx context.Context, request *pb.SignInRequest) (*pb.SignInResponse, error) {
+	defer func(begin time.Time) { dur.Observe(time.Since(begin).Seconds()) }(time.Now())
+
 	_, response, err := s.signIn.ServeGRPC(ctx, request)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
