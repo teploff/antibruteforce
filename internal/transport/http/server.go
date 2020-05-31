@@ -3,11 +3,11 @@ package http
 import (
 	"context"
 	"encoding/json"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/teploff/antibruteforce/internal/endpoints/admin"
 	"go.uber.org/zap"
 )

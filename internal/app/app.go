@@ -87,7 +87,8 @@ func (a *App) Run() {
 	rateLimiter := limiter.NewRateLimiter(a.loginBucket, a.passwordBucket, a.ipBucket, a.cfg.RateLimiter.GCTime)
 
 	authSvc := service.NewAuthService(rateLimiter, a.ipList)
-	adminSvc := middleware.NewPrometheusMiddleware(service.NewAdminService(a.ipList, a.loginBucket, a.passwordBucket, a.ipBucket))
+	adminSvc := middleware.NewPrometheusMiddleware(
+		service.NewAdminService(a.ipList, a.loginBucket, a.passwordBucket, a.ipBucket))
 
 	gRPCServer := kitgrpc.NewGRPCServer(auth.MakeAuthEndpoints(authSvc),
 		logger.NewZapSugarLogger(a.logger, zapcore.ErrorLevel))

@@ -2,12 +2,13 @@ package middleware
 
 import (
 	"fmt"
+	"net"
+	"time"
+
 	"github.com/go-kit/kit/metrics"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"github.com/teploff/antibruteforce/internal/domain/service"
-	"net"
-	"time"
 )
 
 type prometheusMiddleware struct {
@@ -37,7 +38,12 @@ func NewPrometheusMiddleware(next service.AdminService) service.AdminService {
 		Name:      "count_result",
 		Help:      "The result of each count method.",
 	}, []string{})
-	return &prometheusMiddleware{requestCount: requestCount, requestLatency: requestLatency, countResult: countResult, next: next}
+
+	return &prometheusMiddleware{
+		requestCount:   requestCount,
+		requestLatency: requestLatency,
+		countResult:    countResult, next: next,
+	}
 }
 
 func (p prometheusMiddleware) ResetBucketByLogin(login string) (err error) {
@@ -48,6 +54,7 @@ func (p prometheusMiddleware) ResetBucketByLogin(login string) (err error) {
 	}(time.Now())
 
 	err = p.next.ResetBucketByLogin(login)
+
 	return
 }
 
@@ -59,6 +66,7 @@ func (p prometheusMiddleware) ResetBucketByPassword(password string) (err error)
 	}(time.Now())
 
 	err = p.next.ResetBucketByPassword(password)
+
 	return
 }
 
@@ -70,6 +78,7 @@ func (p prometheusMiddleware) ResetBucketByIP(ip net.IP) (err error) {
 	}(time.Now())
 
 	err = p.next.ResetBucketByIP(ip)
+
 	return
 }
 
@@ -81,6 +90,7 @@ func (p prometheusMiddleware) AddInBlacklist(ipNet *net.IPNet) (err error) {
 	}(time.Now())
 
 	err = p.next.AddInBlacklist(ipNet)
+
 	return
 }
 
@@ -92,6 +102,7 @@ func (p prometheusMiddleware) RemoveFromBlacklist(ipNet *net.IPNet) (err error) 
 	}(time.Now())
 
 	err = p.next.RemoveFromBlacklist(ipNet)
+
 	return
 }
 
@@ -103,6 +114,7 @@ func (p prometheusMiddleware) AddInWhitelist(ipNet *net.IPNet) (err error) {
 	}(time.Now())
 
 	err = p.next.AddInWhitelist(ipNet)
+
 	return
 }
 
@@ -114,5 +126,6 @@ func (p prometheusMiddleware) RemoveFromWhitelist(ipNet *net.IPNet) (err error) 
 	}(time.Now())
 
 	err = p.next.RemoveFromWhitelist(ipNet)
+
 	return
 }
